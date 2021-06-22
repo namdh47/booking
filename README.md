@@ -127,25 +127,25 @@
 
 
 ### 폴리시 부착
-![MSA8](https://user-images.githubusercontent.com/82796039/122988928-3aa42080-d3dd-11eb-8fdc-01ac2735ea56.png)
+![MSA8](https://user-images.githubusercontent.com/82796039/122989979-6673d600-d3de-11eb-94e1-f517a9ae53dd.png)
 
 
 ### 폴리시의 이동과 컨텍스트 매핑 (점선은 Pub/Sub, 실선은 Req/Resp)
-![MSA9](https://user-images.githubusercontent.com/82796039/122988957-41cb2e80-d3dd-11eb-82b3-b693e848630e.png)
+![MSA9](https://user-images.githubusercontent.com/82796039/122989997-6d9ae400-d3de-11eb-97da-8c703aa9d7ec.png)
 
 
 ### 완성된 1차 모형
-![MSA10](https://user-images.githubusercontent.com/82796039/122988999-4abc0000-d3dd-11eb-93c4-299b34bd8ad7.png)
+![MSA10](https://user-images.githubusercontent.com/82796039/122990021-74295b80-d3de-11eb-9fef-c2e19f6ea043.png)
 
 
 ### 1차 완성본에 대한 기능적 요구사항 검증
-![MSA11](https://user-images.githubusercontent.com/82796039/122989134-6f17dc80-d3dd-11eb-9c03-7464e76d0293.png)
+![MSA11](https://user-images.githubusercontent.com/82796039/122990050-7e4b5a00-d3de-11eb-9278-4acaf62b447b.png)
 
     - 고객이 원하는 물품,기간,비용을 기입한다 (ok)
     - 고객이 비용을 결제한다 (ok)
     - 고객이 결제하면 대여자들은 요청목록을 확인하고 대여매칭을 확정할 수 있다 (ok)
 
-![MSA12](https://user-images.githubusercontent.com/82796039/122989172-78a14480-d3dd-11eb-87fd-2d1e3e4bb690.png)
+![MSA12](https://user-images.githubusercontent.com/82796039/122990082-84d9d180-d3de-11eb-99e4-0fc32d17c413.png)
 
     - 고객이 대여 주문을 취소할 수 있다 (ok)
     - 대여 주문이 취소되면 대여 매칭이 취소된다 (ok)
@@ -154,13 +154,13 @@
     
     
 ### 모델 수정
-![MSA13](https://user-images.githubusercontent.com/82796039/122987738-e3518080-d3db-11eb-929e-68a19dbdd489.png)
+![MSA13](https://user-images.githubusercontent.com/82796039/122990127-8d320c80-d3de-11eb-91bb-02eab0e9a77a.png)
 
 - 수정된 모델은 모든 요구사항을 커버함.
 
 
 ### 비기능 요구사항 검증
-![MSA14](https://user-images.githubusercontent.com/82796039/122988127-58bd5100-d3dc-11eb-9114-37ddad03071d.png)
+![MSA14](https://user-images.githubusercontent.com/82796039/122990150-94591a80-d3de-11eb-8e73-3371d279178d.png)
 
     - 마이크로 서비스를 넘나드는 시나리오에 대한 트랜잭션 처리
     - 고객 주문 시 결제처리:  결제가 완료되지 않은 주문은 절대 받지 않는다는 경영자의 철학에 따라, ACID 트랜잭션 적용. 주문완료 시 결제처리에 대해서는 Request-Response 방식 처리
