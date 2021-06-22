@@ -169,8 +169,7 @@
 
 
 ## 헥사고날 아키텍처 다이어그램 도출
-![image](https://user-images.githubusercontent.com/11955597/120057954-46245600-c082-11eb-8873-c5345b3d1348.png)
-
+![MSA-h](https://user-images.githubusercontent.com/82796039/122990895-66c0a100-d3df-11eb-9c1d-f97b4eeb5e47.png)
 
     - Chris Richardson, MSA Patterns 참고하여 Inbound adaptor와 Outbound adaptor를 구분함
     - 호출관계에서 PubSub 과 Req/Resp 를 구분함
@@ -180,16 +179,19 @@
 # 구현방안 및 검증
 
 - 분석/설계 단계에서 도출된 헥사고날 아키텍처에 따라, 각 BC별로 대변되는 마이크로 서비스들을 **Spring Boot**로 구현하였다.
-- 구현한 각 서비스  로컬에서 실행하는 방법은 아래와 같다 (각자의 포트넘버는 8081 ~ 8084 이다)
+- 구현한 각 서비스  로컬에서 실행하는 방법은 아래와 같다 (각자의 포트넘버는 8081 ~ 8085 이다)
 
 ```
-cd catch
+cd reserve
 mvn spring-boot:run
 
-cd pickup
+cd lend
 mvn spring-boot:run  
 
 cd payment
+mvn spring-boot:run 
+
+cd promotion
 mvn spring-boot:run 
 
 cd mypage
@@ -198,9 +200,9 @@ mvn spring-boot:run
 
 
 ## DDD 의 적용
-- 각 서비스내에 도출된 핵심 Aggregate Root 객체를 Entity 로 선언하였다: (예시는 Catch 마이크로 서비스).
+- 각 서비스내에 도출된 핵심 Aggregate Root 객체를 Entity 로 선언하였다: (예시는 reserve 마이크로 서비스).
 - Event Storming을 통한 아키텍쳐와 Domain 구조로 DDD의 적용을 확인 며, 각 Domain에 해당하는 Entity는 다음과 같다.
-- **Catch(택시 요청) / Payment(결제 이력) / Pickup(택시 매칭)**
+- **Reserve(대여요청) / Payment(결제) / lend(대여매칭) / Promotion(할인대여)**
 
 ```
 package taxiteam;
