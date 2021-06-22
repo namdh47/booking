@@ -85,27 +85,26 @@
 
 
 ### AS-IS 조직 (Horizontally-Aligned)
-![image](https://user-images.githubusercontent.com/81601230/119945548-90e59580-bfd0-11eb-9d67-8743ff8133e1.png)
-
+![MSA1](https://user-images.githubusercontent.com/82796039/122975706-9a46ff80-d3ce-11eb-85b3-060cb8d1edf5.png)
 
 ### TO-BE 조직 (Vertically-Aligned)
-![image](https://user-images.githubusercontent.com/81601230/119945590-9f33b180-bfd0-11eb-9ef7-1abd5afb5b2b.png)
+![MSA2](https://user-images.githubusercontent.com/82796039/122975767-ab900c00-d3ce-11eb-8ab4-161559f368ff.png)
 
 
 ## 서비스 설계를 위한 Event Storming
 - MSAEz를 이용하여 Event Storming을 진행하였다.
-- 결과 링크:  http://www.msaez.io/#/storming/PF1pfRP3vaXhLUEUMVj8lFZ1FIi2/every/3c1d852da14f8f3c6a2f41b8cc54eecd
+- 결과 링크:  http://www.msaez.io/#/storming/TSmzfftYDjNKHL0AljlY5eliW213/8c5407ae52a77343092383412bae392a
 - 도출 순서는 다음과 같다.
 - **이벤트 도출 - 부적격 이벤트 탈락 - 액터/커맨드 - 어그리게잇 - 바인디드 컨텍스트 - 폴리시 - 컨텍스트 매핑 - 요구사항 검증 및 보완**
 
 ### 이벤트 도출
-![image](https://user-images.githubusercontent.com/81601230/119945899-00f41b80-bfd1-11eb-8914-bac35185b49f.png)
+![MSA3](https://user-images.githubusercontent.com/82796039/122975812-b5197400-d3ce-11eb-8fc5-a85e10202f40.png)
 
 
 ### 부적격 이벤트 탈락
-![image](https://user-images.githubusercontent.com/81601230/119945921-0487a280-bfd1-11eb-953e-54f03a32d3ca.png)
+![MSA4](https://user-images.githubusercontent.com/82796039/122975845-bcd91880-d3ce-11eb-84bc-69c3c0181409.png)
 
-    - 과정 중 도출된 잘못된 도메인 이벤트들을 걸러내는 작업을 수행함 (UI 이벤트. 시스템 동작 등)
+- 과정 중 도출된 잘못된 도메인 이벤트들을 걸러내는 작업을 수행함 (UI 이벤트. 시스템 동작 등)
 
 
 ### 액터, 커맨드 부착하여 가독성개선
