@@ -112,13 +112,13 @@
 
 
 ### 어그리게잇으로 묶기
-![MSA6](https://user-images.githubusercontent.com/82796039/122979316-5d7d0780-d3d2-11eb-8586-0d5f44d0c45f.png)
+![MSA6](https://user-images.githubusercontent.com/82796039/122988860-23653300-d3dd-11eb-9993-77f7fc08ac99.png)
 
     - 대여 요청, 결제 이력, 대여 매칭은 그와 연결된 command 와 event 들에 의하여 트랜잭션이 유지되어야 하는 단위로 그룹핑함
 
 
 ### 바운디드 컨텍스트로 묶기
-![MSA7](https://user-images.githubusercontent.com/82796039/122979347-64a41580-d3d2-11eb-95ad-4dfea23a87b6.png)
+![MSA7](https://user-images.githubusercontent.com/82796039/122988893-31b34f00-d3dd-11eb-86e8-37500be9f873.png)
 
     - 도메인 서열 분리 
         - Core Domain: 대여 요청, 대여 매칭, 프로모션 - 없어서는 안될 핵심 서비스이며, 연간 Up-time SLA 수준을 99.999% 목표, 배포주기는 app의 경우 1주일 1회 미만, store의 경우 1개월 1회 미만
@@ -127,26 +127,26 @@
 
 
 ### 폴리시 부착
-![MSA8](https://user-images.githubusercontent.com/82796039/122984627-2e699480-d3d8-11eb-9acd-a4e512c30f70.png)
+![MSA8](https://user-images.githubusercontent.com/82796039/122988928-3aa42080-d3dd-11eb-8fdc-01ac2735ea56.png)
 
 
 ### 폴리시의 이동과 컨텍스트 매핑 (점선은 Pub/Sub, 실선은 Req/Resp)
-![MSA9](https://user-images.githubusercontent.com/82796039/122984653-36c1cf80-d3d8-11eb-866e-b4d70c30a6c2.png)
+![MSA9](https://user-images.githubusercontent.com/82796039/122988957-41cb2e80-d3dd-11eb-82b3-b693e848630e.png)
 
 
 ### 완성된 1차 모형
-![MSA10](https://user-images.githubusercontent.com/82796039/122984740-4fca8080-d3d8-11eb-8462-732d2c174c52.png)
+![MSA10](https://user-images.githubusercontent.com/82796039/122988999-4abc0000-d3dd-11eb-93c4-299b34bd8ad7.png)
 
 
 ### 1차 완성본에 대한 기능적 요구사항 검증
-![MSA11](https://user-images.githubusercontent.com/82796039/122986337-480bdb80-d3da-11eb-8f12-5e100447df01.png)
+![MSA11](https://user-images.githubusercontent.com/82796039/122989134-6f17dc80-d3dd-11eb-9c03-7464e76d0293.png)
 
     - 고객이 원하는 물품,기간,비용을 기입한다 (ok)
     - 고객이 비용을 결제한다 (ok)
     - 고객이 결제하면 대여자들은 요청목록을 확인하고 대여매칭을 확정할 수 있다 (ok)
-    
-![MSA12](https://user-images.githubusercontent.com/82796039/122986775-d4b69980-d3da-11eb-925e-6fce888ac05a.png)
-    
+
+![MSA12](https://user-images.githubusercontent.com/82796039/122989172-78a14480-d3dd-11eb-87fd-2d1e3e4bb690.png)
+
     - 고객이 대여 주문을 취소할 수 있다 (ok)
     - 대여 주문이 취소되면 대여 매칭이 취소된다 (ok)
     - 고객이 대여상태를 중간중간 조회한다 (View-green sticker 의 추가로 ok)
