@@ -1,7 +1,4 @@
-# booking
-![image](https://user-images.githubusercontent.com/45971330/118398020-b948c800-b691-11eb-84f0-f69f29b29017.png)
-
-# 택시 호출 서비스
+# 중고 도서판매
 
 
 # Table of contents
