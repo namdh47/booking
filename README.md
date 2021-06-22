@@ -137,42 +137,36 @@
 ### 완성된 1차 모형
 ![MSA10](https://user-images.githubusercontent.com/82796039/122984740-4fca8080-d3d8-11eb-8462-732d2c174c52.png)
 
-    - 도출 이후 기사 택시 매칭 확정 필요에 의해 View Model 추가함
+    - 도출 이후 대여 매칭 확정 필요에 의해 View Model 추가함
 
 
 ### 1차 완성본에 대한 기능적 요구사항 검증
-![image](https://user-images.githubusercontent.com/81601230/119946533-b1621f80-bfd1-11eb-930e-b52cf4eb241c.png)
+![MSA11](https://user-images.githubusercontent.com/82796039/122986337-480bdb80-d3da-11eb-8f12-5e100447df01.png)
 
-    - 고객이 출발지,목적지,비용을 기입한다 (ok)
+    - 고객이 원하는 물품,기간,비용을 기입한다 (ok)
     - 고객이 비용을 결제한다 (ok)
-    - 고객이 결제하면 택시기사들은 요청목록을 확인하고 매칭을 확정할 수 있다 (ok)
-    - 택시기사가 출발지로 출발한다 (ok)
+    - 고객이 결제하면 대여자들은 요청목록을 확인하고 대여매칭을 확정할 수 있다 (ok)
     
-
-![image](https://user-images.githubusercontent.com/81601230/119946576-bc1cb480-bfd1-11eb-96f4-84252a9e4452.png)
-    - 고객이 주문을 취소할 수 있다 (ok)
-
-    - 주문이 취소되면 택시 매칭이 취소된다 (ok)
+![MSA12](https://user-images.githubusercontent.com/82796039/122986775-d4b69980-d3da-11eb-925e-6fce888ac05a.png)
     
-    - 고객이 주문상태를 중간중간 조회한다 (View-green sticker 의 추가로 ok)
-    
-    - 주문, 매칭 상태가 바뀔 때 마다 mypage를 통해 확인한다 (?)
+    - 고객이 대여 주문을 취소할 수 있다 (ok)
+    - 대여 주문이 취소되면 대여 매칭이 취소된다 (ok)
+    - 고객이 대여상태를 중간중간 조회한다 (View-green sticker 의 추가로 ok)
+    - 대여, 매칭 상태가 바뀔 때 마다 mypage를 통해 확인한다 (?)
     
     
-
-
 ### 모델 수정
-![image](https://user-images.githubusercontent.com/81601230/119946599-c2ab2c00-bfd1-11eb-8bf5-6d90947261a6.png)
-    
-    - 수정된 모델은 모든 요구사항을 커버함.
+![MSA13](https://user-images.githubusercontent.com/82796039/122987738-e3518080-d3db-11eb-929e-68a19dbdd489.png)
+
+- 수정된 모델은 모든 요구사항을 커버함.
 
 
 ### 비기능 요구사항 검증
-![image](https://user-images.githubusercontent.com/81601230/119946668-d787bf80-bfd1-11eb-9928-2d6610a9b84a.png)
+![MSA14](https://user-images.githubusercontent.com/82796039/122988127-58bd5100-d3dc-11eb-9114-37ddad03071d.png)
 
     - 마이크로 서비스를 넘나드는 시나리오에 대한 트랜잭션 처리
-    - 고객 주문 시 결제처리:  결제가 완료되지 않은 주문은 절대 받지 않는다는 경영자의 오랜 신념(?) 에 따라, ACID 트랜잭션 적용. 주문완료 시 결제처리에 대해서는 Request-Response 방식 처리
-    - 결제 완료 시 기사연결 매칭처리:  catch 에서 pickup 마이크로서비스로 매칭요청이 전달되는 과정에 있어서 pickup 마이크로 서비스가 별도의 배포주기를 가지기 때문에 Eventual Consistency 방식으로 트랜잭션 처리함.
+    - 고객 주문 시 결제처리:  결제가 완료되지 않은 주문은 절대 받지 않는다는 경영자의 철학에 따라, ACID 트랜잭션 적용. 주문완료 시 결제처리에 대해서는 Request-Response 방식 처리
+    - 결제 완료 시 대여자 매칭처리:  reserve에서 lend 마이크로서비스로 매칭요청이 전달되는 과정에 있어서 lend 마이크로 서비스가 별도의 배포주기를 가지기 때문에 Eventual Consistency 방식으로 트랜잭션 처리함.
     - 나머지 모든 inter-microservice 트랜잭션: 결재상태, 매칭상태 등 모든 이벤트에 대해 데이터 일관성의 시점이 크리티컬하지 않은 모든 경우가 대부분이라 판단, Eventual Consistency 를 기본으로 채택함.
 
 
