@@ -137,8 +137,6 @@
 ### 완성된 1차 모형
 ![MSA10](https://user-images.githubusercontent.com/82796039/122984740-4fca8080-d3d8-11eb-8462-732d2c174c52.png)
 
-    - 도출 이후 대여 매칭 확정 필요에 의해 View Model 추가함
-
 
 ### 1차 완성본에 대한 기능적 요구사항 검증
 ![MSA11](https://user-images.githubusercontent.com/82796039/122986337-480bdb80-d3da-11eb-8f12-5e100447df01.png)
