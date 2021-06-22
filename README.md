@@ -108,21 +108,21 @@
 
 
 ### 액터, 커맨드 부착하여 가독성개선
-![image](https://user-images.githubusercontent.com/81601230/119946050-25e88e80-bfd1-11eb-9638-9e9430331f7d.png)
+![MSA5](https://user-images.githubusercontent.com/82796039/122977254-260d5b80-d3d0-11eb-9fd4-940061054e79.png)
 
 
 ### 어그리게잇으로 묶기
-![image](https://user-images.githubusercontent.com/81601230/119946089-33057d80-bfd1-11eb-83fb-450864090077.png)
+![MSA6](https://user-images.githubusercontent.com/82796039/122977736-b64ba080-d3d0-11eb-8ae9-9eae209f9ef9.png)
 
-    - 택시 요청, 결제 이력, 택시 매칭은 그와 연결된 command 와 event 들에 의하여 트랜잭션이 유지되어야 하는 단위로 그룹핑함
+    - 대여 요청, 결제 이력, 대여 매칭은 그와 연결된 command 와 event 들에 의하여 트랜잭션이 유지되어야 하는 단위로 그룹핑함
 
 
 ### 바운디드 컨텍스트로 묶기
-![image](https://user-images.githubusercontent.com/81601230/119946195-55979680-bfd1-11eb-9ac7-8f8c2e2826a9.png)
+![MSA7](https://user-images.githubusercontent.com/82796039/122978252-47227c00-d3d1-11eb-9af6-67cb26d5a78f.png)
 
     - 도메인 서열 분리 
-        - Core Domain: 택시 요청, 택시 매칭 - 없어서는 안될 핵심 서비스이며, 연견 Up-time SLA 수준을 99.999% 목표, 배포주기는 app 의 경우 1주일 1회 미만, store 의 경우 1개월 1회 미만
-        - Supporting Domain: 고객/기사 지원 서비스(미포함) - 경쟁력을 내기위한 서비스이며, SLA 수준은 연간 60% 이상 uptime 목표, 배포주기는 각 팀의 자율이나 표준 스프린트 주기가 1주일 이므로 1주일 1회 이상을 기준으로 함.
+        - Core Domain: 대여 요청, 대여 매칭, 프로모션 - 없어서는 안될 핵심 서비스이며, 연간 Up-time SLA 수준을 99.999% 목표, 배포주기는 app의 경우 1주일 1회 미만, store의 경우 1개월 1회 미만
+        - Supporting Domain: 고객/대여자 지원 서비스(미포함) - 경쟁력을 위한 서비스이며, SLA 수준은 연간 60% 이상 uptime 목표, 배포주기는 각 팀의 자율이나 표준 스프린트 주기가 1주일 이므로 1주일 1회 이상을 기준으로 함.
         - General Domain: 결제 - 결제서비스로 3rd Party 외부 서비스를 사용하는 것이 경쟁력이 높음 (향후 전환 예정)
 
 
