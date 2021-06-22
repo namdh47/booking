@@ -108,17 +108,17 @@
 
 
 ### 액터, 커맨드 부착하여 가독성개선
-![MSA5](https://user-images.githubusercontent.com/82796039/122979273-52c27280-d3d2-11eb-8c1a-a69e673ca2f0.png)
+![MSA5](https://user-images.githubusercontent.com/82796039/123001779-10a62a80-d3ec-11eb-8809-535b02e94414.png)
 
 
 ### 어그리게잇으로 묶기
-![MSA6](https://user-images.githubusercontent.com/82796039/122988860-23653300-d3dd-11eb-9993-77f7fc08ac99.png)
+![MSA6](https://user-images.githubusercontent.com/82796039/123001795-169c0b80-d3ec-11eb-9b35-6d8c36cc0f06.png)
 
     - 대여 요청, 결제 이력, 대여 매칭은 그와 연결된 command 와 event 들에 의하여 트랜잭션이 유지되어야 하는 단위로 그룹핑함
 
 
 ### 바운디드 컨텍스트로 묶기
-![MSA7](https://user-images.githubusercontent.com/82796039/122988893-31b34f00-d3dd-11eb-86e8-37500be9f873.png)
+![MSA7](https://user-images.githubusercontent.com/82796039/123001808-1d2a8300-d3ec-11eb-81bc-a4d9798fca41.png)
 
     - 도메인 서열 분리 
         - Core Domain: 대여 요청, 대여 매칭, 프로모션 - 없어서는 안될 핵심 서비스이며, 연간 Up-time SLA 수준을 99.999% 목표, 배포주기는 app의 경우 1주일 1회 미만, store의 경우 1개월 1회 미만
@@ -127,25 +127,25 @@
 
 
 ### 폴리시 부착
-![MSA8](https://user-images.githubusercontent.com/82796039/122989979-6673d600-d3de-11eb-94e1-f517a9ae53dd.png)
+![MSA8](https://user-images.githubusercontent.com/82796039/123001824-23206400-d3ec-11eb-895e-a573efb576f5.png)
 
 
 ### 폴리시의 이동과 컨텍스트 매핑 (점선은 Pub/Sub, 실선은 Req/Resp)
-![MSA9](https://user-images.githubusercontent.com/82796039/122989997-6d9ae400-d3de-11eb-97da-8c703aa9d7ec.png)
+![MSA9](https://user-images.githubusercontent.com/82796039/123001844-287dae80-d3ec-11eb-94db-76e424e7c4f5.png)
 
 
 ### 완성된 1차 모형
-![MSA10](https://user-images.githubusercontent.com/82796039/122990021-74295b80-d3de-11eb-9fef-c2e19f6ea043.png)
+![MSA10](https://user-images.githubusercontent.com/82796039/123001872-30d5e980-d3ec-11eb-93ea-eab4b8b49d3b.png)
 
 
 ### 1차 완성본에 대한 기능적 요구사항 검증
-![MSA11](https://user-images.githubusercontent.com/82796039/122990050-7e4b5a00-d3de-11eb-9278-4acaf62b447b.png)
+![MSA11](https://user-images.githubusercontent.com/82796039/123001893-36cbca80-d3ec-11eb-959b-8406994b56cf.png)
 
     - 고객이 원하는 물품,기간,비용을 기입한다 (ok)
     - 고객이 비용을 결제한다 (ok)
     - 고객이 결제하면 대여자들은 요청목록을 확인하고 대여매칭을 확정할 수 있다 (ok)
 
-![MSA12](https://user-images.githubusercontent.com/82796039/122990082-84d9d180-d3de-11eb-99e4-0fc32d17c413.png)
+![MSA12](https://user-images.githubusercontent.com/82796039/123001913-3d5a4200-d3ec-11eb-8ff7-57fa8e20501a.png)
 
     - 고객이 대여 주문을 취소할 수 있다 (ok)
     - 대여 주문이 취소되면 대여 매칭이 취소된다 (ok)
@@ -154,13 +154,13 @@
     
     
 ### 모델 수정
-![MSA13](https://user-images.githubusercontent.com/82796039/122990127-8d320c80-d3de-11eb-91bb-02eab0e9a77a.png)
+![MSA13](https://user-images.githubusercontent.com/82796039/123001931-43e8b980-d3ec-11eb-85f0-6fe96e7e78e2.png)
 
 - 수정된 모델은 모든 요구사항을 커버함.
 
 
 ### 비기능 요구사항 검증
-![MSA14](https://user-images.githubusercontent.com/82796039/122990150-94591a80-d3de-11eb-8e73-3371d279178d.png)
+![MSA14](https://user-images.githubusercontent.com/82796039/123001967-4ba85e00-d3ec-11eb-8806-edffb7ecc2bf.png)
 
     - 마이크로 서비스를 넘나드는 시나리오에 대한 트랜잭션 처리
     - 고객 주문 시 결제처리:  결제가 완료되지 않은 주문은 절대 받지 않는다는 경영자의 철학에 따라, ACID 트랜잭션 적용. 주문완료 시 결제처리에 대해서는 Request-Response 방식 처리
@@ -200,12 +200,12 @@ mvn spring-boot:run
 
 
 ## DDD 의 적용
-- 각 서비스내에 도출된 핵심 Aggregate Root 객체를 Entity 로 선언하였다: (예시는 reserve 마이크로 서비스).
+- 각 서비스내에 도출된 핵심 Aggregate Root 객체를 Entity 로 선언하였다: (예시는 reserve 마이크로 서비스 - reserve.java).
 - Event Storming을 통한 아키텍쳐와 Domain 구조로 DDD의 적용을 확인 며, 각 Domain에 해당하는 Entity는 다음과 같다.
 - **Reserve(대여요청) / Payment(결제) / lend(대여매칭) / Promotion(할인대여)**
 
 ```
-package taxiteam;
+package booking;
 
 import javax.persistence.*;
 import org.springframework.beans.BeanUtils;
@@ -213,52 +213,48 @@ import java.util.List;
 import java.util.Date;
 
 @Entity
-@Table(name="Catch_table")
-public class Catch {
+@Table(name="Reserve_table")
+public class Reserve {
 
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
     private Integer price;
-    private String startingPoint;
-    private String destination;
+    private String startDay;
+    private String endDay;
     private String customer;
-    //고객의 명령 상태(승인 or 취소)를 표현하기위한 변수 추가
     private String status;
+    private String name;
 
-    //최초 결재 승인 요청 액션
     @PostPersist
     public void onPostPersist(){
-        
-        CatchRequested catchRequested = new CatchRequested();
-        BeanUtils.copyProperties(this, catchRequested);
-        catchRequested.publishAfterCommit();
+        ReserveRequested reserveRequested = new ReserveRequested();
+        BeanUtils.copyProperties(this, reserveRequested);
+        reserveRequested.publishAfterCommit();
 
-        //Following code causes dependency to external APIs
-        // it is NOT A GOOD PRACTICE. instead, Event-Policy mapping is recommended.
-        taxiteam.external.Payment payment = new taxiteam.external.Payment();
-        // mappings goes here 
+        booking.external.Payment payment = new booking.external.Payment();
+
         payment.setMatchId(Long.valueOf(this.getId()));
         payment.setPrice(Integer.valueOf(this.getPrice()));
         payment.setPaymentAction("Approved");
         payment.setCustomer(String.valueOf(this.getCustomer()));
-        payment.setStartingPoint(String.valueOf(this.getStartingPoint()));
-        payment.setDestination(String.valueOf(this.getDestination()));
-        CatchApplication.applicationContext.getBean(taxiteam.external.PaymentService.class)
-            .paymentRequest(payment);
+        payment.setStartDay(String.valueOf(this.getStartDay()));
+        payment.setEndDay(String.valueOf(this.getEndDay()));
+        payment.setName(String.valueOf(this.getName()));
 
+        ReserveApplication.applicationContext.getBean(booking.external.PaymentService.class)
+            .paymentRequest(payment);
     }
 
-    //사용자가 해당 결재건 취소 했을 경우. (status를 Cancel로 업데이트 보냄) 
+    //사용자가 해당 결재를 취소 했을 경우에는 status를 Cancel로 업데이트 보냄 
     @PreUpdate
-    public void onPreupdate(){
+    public void onPreUpdate(){
         if("Cancel".equals(status)){
-            CatchCancelled catchCancelled = new CatchCancelled();
-            BeanUtils.copyProperties(this, catchCancelled);
-            catchCancelled.publishAfterCommit();
+            ReserveCancelled reserveCancelled = new ReserveCancelled();
+            BeanUtils.copyProperties(this, reserveCancelled);
+            reserveCancelled.publishAfterCommit();
         }
     }
-
 
     public Long getId() {
         return id;
@@ -274,19 +270,19 @@ public class Catch {
     public void setPrice(Integer price) {
         this.price = price;
     }
-    public String getStartingPoint() {
-        return startingPoint;
+    public String getStartDay() {
+        return startDay;
     }
 
-    public void setStartingPoint(String startingPoint) {
-        this.startingPoint = startingPoint;
+    public void setStartDay(String startDay) {
+        this.startDay = startDay;
     }
-    public String getDestination() {
-        return destination;
+    public String getEndDay() {
+        return endDay;
     }
 
-    public void setDestination(String destination) {
-        this.destination = destination;
+    public void setEndDay(String endDay) {
+        this.endDay = endDay;
     }
     public String getCustomer() {
         return customer;
@@ -295,25 +291,34 @@ public class Catch {
     public void setCustomer(String customer) {
         this.customer = customer;
     }
-
-    public String getStatus() { 
-        return status; 
+    public String getStatus() {
+        return status;
     }
+
     public void setStatus(String status) {
         this.status = status;
     }
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }
+
+
 ```
 - **Entity Pattern** 과 **Repository Pattern** 을 적용하여 JPA 를 통하여 다양한 데이터소스 유형 (RDB or NoSQL) 에 대한 별도의 처리가 없도록
-데이터 접근 어댑터를 자동 생성하기 위하여 **Spring Data REST** 의 RestRepository 를 적용하였다
+데이터 접근 어댑터를 자동 생성하기 위하여 **Spring Data REST** 의 RestRepository를 적용하였다.
 ```
-package taxiteam;
+package booking;
 
 import org.springframework.data.repository.PagingAndSortingRepository;
-//import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-//@RepositoryRestResource(collectionResourceRel="catches", path="catches")
-public interface CatchRepository extends PagingAndSortingRepository<Catch, Long>{
+@RepositoryRestResource(collectionResourceRel="reserves", path="reserves")
+public interface ReserveRepository extends PagingAndSortingRepository<Reserve, Long>{
 
 }
 
@@ -322,30 +327,30 @@ public interface CatchRepository extends PagingAndSortingRepository<Catch, Long>
 #### 검증 및 테스트
 - 적용 후 REST API 의 테스트
 ```
-# catch 서비스의 요청처리
+# reseve 서비스의 요청처리
 http POST http://localhost:8081/catches price=250000 startingPoint=Busan destination=Seoul customer=Peter  status=approve
 ```
 ![image](https://user-images.githubusercontent.com/11955597/120089011-5b0bf280-c131-11eb-81c6-196659a8e810.png)
 ```
-# catch 서비스의 상태확인 
+# reseve 서비스의 상태확인 
 http http://localhost:8081/catches/2
 ```
 ![image](https://user-images.githubusercontent.com/11955597/120089031-855db000-c131-11eb-96ca-e59c52f02afb.png)
 ```
-# catch 서비스에 대한 pickup 서비스의 응답
+# reseve 서비스에 대한 lend 서비스의 응답
 http http://localhost:8082/pickUps matchId=2 custmoer=Peter driver=Speedmate
 ```
 ![image](https://user-images.githubusercontent.com/11955597/120089073-eb4a3780-c131-11eb-9d74-c4367ce94426.png)
 
 
 ## 폴리글랏 퍼시스턴스
-- catch 서비스는 다른 서비스와 구별을 위해 hsqldb를 사용 하였다.
-이를 위해 catchh내 pom.xml에 dependency를 h2database에서 hsqldb로 변경 하였다.
+- reserve 서비스는 다른 서비스와 구별을 위해 hsqldb를 사용 하였다.
+이를 위해 reserve 내 pom.xml에 dependency를 h2database에서 hsqldb로 변경 하였다.
 
 ```
-# catch service pom.xml
+# reserve - pom.xml
 
-		<!--
+	        !--
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
@@ -362,11 +367,11 @@ http http://localhost:8082/pickUps matchId=2 custmoer=Peter driver=Speedmate
 ```
 
 
-## 동기식 호출 과 Fallback 처리
-- 분석단계에서의 조건 중 하나로 콜요청(catch)->결제(payment) 간의 호출은 동기식 일관성을 유지하는 트랜잭션으로 처리하기로 하였다.
-호출 프로토콜은 이미 앞서 Rest Repository 에 의해 노출되어있는 REST 서비스를 **FeignClient** 를 이용하여 호출하도록 한다. 
+## 동기식 호출과 Fallback 처리
+- 분석 단계에서의 조건 중 하나로 콜요청(reserve)->결제(payment) 간의 호출은 동기식 일관성을 유지하는 트랜잭션으로 처리하기로 하였다.
+호출 프로토콜은 이미 앞서 Rest Repository에 의해 노출되어있는 REST 서비스를 **FeignClient** 를 이용하여 호출하도록 한다. 
 
-- 결제서비스를 호출하기 위하여 Stub과 (FeignClient) 를 이용하여 Service 대행 인터페이스 (Proxy) 를 구현 
+- 결제서비스를 호출하기 위하여 Stub과 (FeignClient)를 이용하여 Service 대행 인터페이스(Proxy)를 구현 
 
 ```
 # (catch) PaymentService.java
