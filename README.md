@@ -432,14 +432,12 @@ http POST http://localhost:8081/reserves price=33333 startDay=20210624 endDay=20
 ### 비동기식 호출
 - 결제가 이루어진 후에 이를 lend 시스템으로 알려주는 행위는 동기가 아닌 비동기 식으로 구현하여, 대여요청/결제시스템에 블로킹을 주지는 않는다. 
 - 이를 위하여 결제이력에 기록을 남긴 후에 곧바로 결제승인이 되었다는 도메인 이벤트를 **Apache Kafka**로 송출한다(Publish)
- 
-```
+
 ![bbb](https://user-images.githubusercontent.com/82796039/123069257-94dcca00-d44d-11eb-9c12-bdba62202522.jpg)   
 
 - lend 서비스에서는 결제승인 이벤트에 대해서 이를 수신하여 자신의 정책을 처리하도록 PolicyHandler 를 구현한다:
 ```
 ![ccc](https://user-images.githubusercontent.com/82796039/123069363-af16a800-d44d-11eb-8476-21be47d33e97.jpg)
-
 
 
 ### 시간적 디커플링 / 장애격리
