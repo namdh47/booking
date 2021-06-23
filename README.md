@@ -416,16 +416,18 @@ http POST http://localhost:8081/reserves price=33333 startDay=20210624 endDay=20
 
 ```
 #대여요청처리(성공)
-http POST http://localhost:8081/catches price=150000 startingPoint=Kwangjoo destination=Chooncheon customer=Steve  status=approve
+http POST http://localhost:8081/reserves price=77777 startDay=20210624 endDay=20210624 customer=andynam status=approve
 ```
-![image](https://user-images.githubusercontent.com/11955597/120089890-59dec380-c139-11eb-8eeb-46e957b35d05.png)
+![9-1](https://user-images.githubusercontent.com/82796039/123077575-20a62480-d455-11eb-8685-bf31c41df557.jpg)
+
 
 -결제서비스(payment)가 정상적으로 동작했는지 조회
 
 ```
-http http://localhost:8083/payments/4
+http http://localhost:8083/payments/2
 ```
-![image](https://user-images.githubusercontent.com/11955597/120089925-afb36b80-c139-11eb-94ff-0496e1f16e64.png)
+![9-2](https://user-images.githubusercontent.com/82796039/123077804-5945fe00-d455-11eb-9874-9cd6903468a0.jpg)
+
 
 -lend 서비스 재가동
 ```
@@ -435,16 +437,15 @@ mvn spring-boot:run
 -lend service 요청 목록 확인
 
 ```
-http http://localhost:8082/catchReqLists/4     # 정상적으로 요청이 들어온 것 확인
+http http://localhost:8082/reserveReqLists/2     # 정상적으로 요청이 들어온 것 확인
 ```
-![image](https://user-images.githubusercontent.com/11955597/120089986-ff923280-c139-11eb-911d-29540007037c.png)
+![9-3](https://user-images.githubusercontent.com/82796039/123077993-81cdf800-d455-11eb-8cfd-0477eb1a2e5e.jpg)
 
 -lend 기능 확인
 ```
-http http://localhost:8082/pickUps matchId=4 custmoer=Steve driver=Safemate   #정상적으로 매핑
+http http://localhost:8082/lends matchId=2 lender=andynam   #정상적으로 매핑
 ```
-![image](https://user-images.githubusercontent.com/11955597/120090101-e938a680-c13a-11eb-9561-34ac7e434e2d.png)
-
+![9-4](https://user-images.githubusercontent.com/82796039/123078200-b346c380-d455-11eb-9d5d-4e1b6d595175.jpg)
 
 ## SAGA / Correlation
 - 픽업(pickup) 시스템에서 상태가 매칭으로 변경되면 대여승인(lend) 시스템 원천데이터의 상태(status) 정보가 update된다
