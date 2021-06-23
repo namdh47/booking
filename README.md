@@ -177,7 +177,8 @@
     
 
 # 구현방안 및 검증
-![1111](https://user-images.githubusercontent.com/82796039/123017906-84563080-d408-11eb-95a2-a8eac736982b.jpg)
+![22222](https://user-images.githubusercontent.com/82796039/123018807-33473c00-d40a-11eb-92dd-04f36b5fec3f.jpg)
+
 
 - 분석/설계 단계에서 도출된 헥사고날 아키텍처에 따라, 각 BC별로 대변되는 마이크로 서비스들을 **Spring Boot**로 구현하였다.
 - 구현한 각 서비스  로컬에서 실행하는 방법은 아래와 같다 (각자의 포트넘버는 8081 ~ 8085 이다)
@@ -328,28 +329,27 @@ public interface ReserveRepository extends PagingAndSortingRepository<Reserve, L
 #### 검증 및 테스트
 - 적용 후 REST API 의 테스트
 ```
-# reseve 서비스의 요청처리
-http POST http://localhost:8081/catches price=250000 startingPoint=Busan destination=Seoul customer=Peter  status=approve
+# reserve 서비스의 요청처리
+http POST http://localhost:8081/reserves price=20000 startDay=20210624 endDay=20210624 customer=andy  status=approve
 ```
-![image](https://user-images.githubusercontent.com/11955597/120089011-5b0bf280-c131-11eb-81c6-196659a8e810.png)
+![1-111](https://user-images.githubusercontent.com/82796039/123021007-41975700-d40e-11eb-8f9d-cd2eabbe4b3e.jpg)
 ```
 # reseve 서비스의 상태확인 
-http http://localhost:8081/catches/2
+http http://localhost:8081/reserves/2
 ```
-![image](https://user-images.githubusercontent.com/11955597/120089031-855db000-c131-11eb-96ca-e59c52f02afb.png)
+![1-22](https://user-images.githubusercontent.com/82796039/123021187-94710e80-d40e-11eb-8bcc-c2605f232b31.jpg)
 ```
 # reseve 서비스에 대한 lend 서비스의 응답
-http http://localhost:8082/pickUps matchId=2 custmoer=Peter driver=Speedmate
+http http://localhost:8082/lends matchId=2 lenrer=andy
 ```
-![image](https://user-images.githubusercontent.com/11955597/120089073-eb4a3780-c131-11eb-9d74-c4367ce94426.png)
-
+![1-33](https://user-images.githubusercontent.com/82796039/123021747-9daeab00-d40f-11eb-96d1-8c3148a5a8d6.jpg)
 
 ## 폴리글랏 퍼시스턴스
 - reserve 서비스는 다른 서비스와 구별을 위해 hsqldb를 사용 하였다.
 이를 위해 reserve 내 pom.xml에 dependency를 h2database에서 hsqldb로 변경 하였다.
 
 ```
-# reserve - pom.xml
+# (reserve) pom.xml
 
 	        !--
 		<dependency>
@@ -375,9 +375,9 @@ http http://localhost:8082/pickUps matchId=2 custmoer=Peter driver=Speedmate
 - 결제서비스를 호출하기 위하여 Stub과 (FeignClient)를 이용하여 Service 대행 인터페이스(Proxy)를 구현 
 
 ```
-# (catch) PaymentService.java
+# (reserve) PaymentService.java
 
-package taxiteam.external;
+package booking.external;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -386,13 +386,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.Date;
 
-//url 수정
-@FeignClient(name="payment", url="http://localhost:8088")
+@FeignClient(name="payment", url="http://localhost:8083")
 public interface PaymentService {
 
     @RequestMapping(method= RequestMethod.POST, path="/payments")
     public void paymentRequest(@RequestBody Payment payment);
-
 }
 ```
 - 주문을 받은 직후(@PostPersist) 결제를 요청하도록 처리
