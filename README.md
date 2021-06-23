@@ -350,23 +350,8 @@ http http://localhost:8082/lends matchId=2 lenrer=andy
 
 ```
 # (reserve) pom.xml
-
-	        !--
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		-->
-
-		<dependency>
-			<groupId>org.hsqldb</groupId>
-			<artifactId>hsqldb</artifactId>
-			<version>2.4.0</version>
-			<scope>runtime</scope>
-		</dependency>
+![aaa](https://user-images.githubusercontent.com/82796039/123068761-27309e00-d44d-11eb-8ace-a3c516c0c3f7.jpg)
 ```
-
 
 ## 동기식 호출과 Fallback 처리
 - 분석 단계에서의 조건 중 하나로 콜요청(reserve)->결제(payment) 간의 호출은 동기식 일관성을 유지하는 트랜잭션으로 처리하기로 하였다.
@@ -421,114 +406,51 @@ public interface PaymentService {
 ---
 #### 검증 및 테스트
 - 서비스를 임의로 정지하면 
-- 동기식 호출에서는 호출 시간에 따른 타임 커플링이 발생하며, 결제 시스템이 장애가 나면 주문도 못받는다는 것을 확인:
+- 동기식 호출에서는 호출 시간에 따른 타임 커플링이 발생하며, 결제 시스템이 장애가 나면 대여요청에 대한 주문처리도 되지 않는 것이 확인 됨:
 ```
 # 결제 (payment) 서비스를 잠시 내려놓음 (ctrl+c)
 
-#주문처리
-http POST http://localhost:8081/reserves price=200000 startingPoint=Daejeon destination=Seoul customer=David  status=approve   # Fail
+#대여요청(실패확인)
+http POST http://localhost:8081/reserves price=11111 startDay=20210624 endDay=20210624 customer=andy  status=approve
 ```
-![image](https://user-images.githubusercontent.com/11955597/120089415-08343a00-c135-11eb-9e81-c4daca7ce905.png)
-
+![3-1](https://user-images.githubusercontent.com/82796039/123066880-6d84fd80-d44b-11eb-9e7c-a7e8567048b8.jpg)
 ```
 #결제서비스 재기동
 cd payment
 mvn spring-boot:run
 
-#주문처리
-http POST http://localhost:8081/catches price=200000 startingPoint=Daejeon destination=Seoul customer=David  status=approve   # Success
+#대여요청(성공확인)
+http POST http://localhost:8081/reserves price=33333 startDay=20210624 endDay=20210624 customer=andy  status=approve
 ```
-![image](https://user-images.githubusercontent.com/11955597/120089493-d66fa300-c135-11eb-8c8e-27e6b0390282.png)
-- 또한 과도한 요청시에 서비스 장애가 도미노 처럼 벌어질 수 있다. (서킷브레이커, 폴백 처리는 운영단계에서 설명한다.)
+![3-2](https://user-images.githubusercontent.com/82796039/123066946-7bd31980-d44b-11eb-81fe-b14962a14b12.jpg)
+- 또한 과도한 서비스 요청시에 서비스 장애가 일어날수 있다.(서킷브레이커, 폴백 처리는 운영단계에서 설명한다.)
 
 
 ## 비동기식 호출 / 시간적 디커플링 / 장애격리 / 최종 (Eventual) 일관성
 
 
 ### 비동기식 호출
-- 결제가 이루어진 후에 이를 pickup 시스템으로 알려주는 행위는 동기가 아닌 비동기 식으로 구현하여, 택시잡기/결제시스템에 블로킹을 주지않는다. 
+- 결제가 이루어진 후에 이를 lend 시스템으로 알려주는 행위는 동기가 아닌 비동기 식으로 구현하여, 대여요청/결제시스템에 블로킹을 주지는 않는다. 
 - 이를 위하여 결제이력에 기록을 남긴 후에 곧바로 결제승인이 되었다는 도메인 이벤트를 **Apache Kafka**로 송출한다(Publish)
  
 ```
-package taxiteam;
-
-import javax.persistence.*;
-import org.springframework.beans.BeanUtils;
-import java.util.List;
-import java.util.Date;
-
-@Entity
-@Table(name="Payment_table")
-public class Payment {
-
-    @Id
-    private Long matchId;
-    private Integer price;
-    private String paymentAction;
-    private String customer;
-    private String startingPoint;
-    private String destination;
-    @PostPersist
-    public void onPostPersist(){
-        PaymentApproved paymentApproved = new PaymentApproved();
-        BeanUtils.copyProperties(this, paymentApproved);
-        paymentApproved.publishAfterCommit();
-
-
-    }
-    
+![bbb](https://user-images.githubusercontent.com/82796039/123069257-94dcca00-d44d-11eb-9c12-bdba62202522.jpg)   
 ```
-- pickup 서비스에서는 결제승인 이벤트에 대해서 이를 수신하여 자신의 정책을 처리하도록 PolicyHandler 를 구현한다:
+- lend 서비스에서는 결제승인 이벤트에 대해서 이를 수신하여 자신의 정책을 처리하도록 PolicyHandler 를 구현한다:
 ```
-
-package taxiteam;
-
-import taxiteam.config.kafka.KafkaProcessor;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.stream.annotation.StreamListener;
-import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.stereotype.Service;
-
-@Service
-public class PolicyHandler{
-    @Autowired CatchReqListRepository CatchReqListRepository;
-    @Autowired PickUpRepository PickUpRepository;
-    @StreamListener(KafkaProcessor.INPUT)
-    public void onStringEventListener(@Payload String eventString){
-
-    }
-
-    @StreamListener(KafkaProcessor.INPUT)
-    public void wheneverPaymentApproved_PickupRequest(@Payload PaymentApproved paymentApproved){
-
-        if(paymentApproved.isMe()){
-            System.out.println("##### listener  : " + paymentApproved.toJson());
-
-
-            //승인완료 시 승인완료된 리스트를 저장
-            CatchReqList catchReqList = new CatchReqList();
-            catchReqList.setId(paymentApproved.getMatchId());
-            catchReqList.setDestination(paymentApproved.getDestination());
-            catchReqList.setStartingPoint(paymentApproved.getStartingPoint());
-            catchReqList.setPrice(paymentApproved.getPrice());
-            CatchReqListRepository.save(catchReqList);
-        }
-    }
-
+![ccc](https://user-images.githubusercontent.com/82796039/123069363-af16a800-d44d-11eb-8476-21be47d33e97.jpg)
 ```
 
 
 ### 시간적 디커플링 / 장애격리
-- pickup 서비스와 payment 시스템은 전혀 결합성이 없어, 만약 pickup시스템이 에러가 생기더라도 고객이 차 배차(catch 시스템) 결제(payment)시스템이 정상적으로 되야한다.
+- lend 서비스와 payment 시스템은 전혀 결합성이 없어, 만약 lend 시스템이 에러가 생기더라도 고객이 대여요청(reserve) 결제(payment)시스템은 정상적이어야 한다.
 ---
 #### 검증 및 테스트
-- pick up 서비스를 잠시 종료한 후 배차/결제 요청
+- lend 서비스를 잠시 종료한 후 대여요청/결제요청
 
 ```
-#배차처리
-http POST http://localhost:8081/catches price=150000 startingPoint=Kwangjoo destination=Chooncheon customer=Steve  status=approve   #Success
+#대여요청처리(성공)
+http POST http://localhost:8081/catches price=150000 startingPoint=Kwangjoo destination=Chooncheon customer=Steve  status=approve
 ```
 ![image](https://user-images.githubusercontent.com/11955597/120089890-59dec380-c139-11eb-8eeb-46e957b35d05.png)
 
@@ -539,19 +461,19 @@ http http://localhost:8083/payments/4
 ```
 ![image](https://user-images.githubusercontent.com/11955597/120089925-afb36b80-c139-11eb-94ff-0496e1f16e64.png)
 
--pickup 서비스 재가동
+-lend 서비스 재가동
 ```
-cd pickup
+cd lend
 mvn spring-boot:run
 ```
--pickup service 요청 목록 확인
+-lend service 요청 목록 확인
 
 ```
 http http://localhost:8082/catchReqLists/4     # 정상적으로 요청이 들어온 것 확인
 ```
 ![image](https://user-images.githubusercontent.com/11955597/120089986-ff923280-c139-11eb-911d-29540007037c.png)
 
--pickup 기능 확인
+-lend 기능 확인
 ```
 http http://localhost:8082/pickUps matchId=4 custmoer=Steve driver=Safemate   #정상적으로 매핑
 ```
@@ -559,7 +481,7 @@ http http://localhost:8082/pickUps matchId=4 custmoer=Steve driver=Safemate   #�
 
 
 ## SAGA / Correlation
-- 픽업(pickup) 시스템에서 상태가 매칭으로 변경되면 매치(catch) 시스템 원천데이터의 상태(status) 정보가 update된다
+- 픽업(pickup) 시스템에서 상태가 매칭으로 변경되면 대여승인(lend) 시스템 원천데이터의 상태(status) 정보가 update된다
 ```
     }
     
