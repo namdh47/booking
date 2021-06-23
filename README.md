@@ -308,8 +308,6 @@ public class Reserve {
         this.name = name;
     }
 }
-
-
 ```
 - **Entity Pattern** 과 **Repository Pattern** 을 적용하여 JPA 를 통하여 다양한 데이터소스 유형 (RDB or NoSQL) 에 대한 별도의 처리가 없도록
 데이터 접근 어댑터를 자동 생성하기 위하여 **Spring Data REST** 의 RestRepository를 적용하였다.
@@ -348,9 +346,10 @@ http http://localhost:8082/lends matchId=2 lenrer=andy
 - reserve 서비스는 다른 서비스와 구별을 위해 hsqldb를 사용 하였다.
 이를 위해 reserve 내 pom.xml에 dependency를 h2database에서 hsqldb로 변경 하였다.
 
-```
 # (reserve) pom.xml
+
 ![aaa](https://user-images.githubusercontent.com/82796039/123068761-27309e00-d44d-11eb-8ace-a3c516c0c3f7.jpg)
+
 
 ## 동기식 호출과 Fallback 처리
 - 분석 단계에서의 조건 중 하나로 콜요청(reserve)->결제(payment) 간의 호출은 동기식 일관성을 유지하는 트랜잭션으로 처리하기로 하였다.
@@ -358,34 +357,33 @@ http http://localhost:8082/lends matchId=2 lenrer=andy
 
 - 결제서비스를 호출하기 위하여 Stub과 (FeignClient)를 이용하여 Service 대행 인터페이스(Proxy)를 구현 
 
-```
-# (reserve) PaymentService.java
+# PaymentService.java
 ![12](https://user-images.githubusercontent.com/82796039/123071405-98715080-d44f-11eb-9130-473bd6793c84.jpg)
 ```
 - 주문을 받은 직후(@PostPersist) 결제를 요청하도록 처리
 ```
 # Reserve.java (Entity)
 ![13](https://user-images.githubusercontent.com/82796039/123071593-c191e100-d44f-11eb-9277-68b66a138759.jpg)
-```
----
+
+
 #### 검증 및 테스트
 - 서비스를 임의로 정지하면 
 - 동기식 호출에서는 호출 시간에 따른 타임 커플링이 발생하며, 결제 시스템이 장애가 나면 대여요청에 대한 주문처리도 되지 않는 것이 확인 됨:
-```
+
 # 결제 (payment) 서비스를 잠시 내려놓음 (ctrl+c)
 
 #대여요청(실패확인)
 http POST http://localhost:8081/reserves price=11111 startDay=20210624 endDay=20210624 customer=andy  status=approve
-```
+
 ![3-1](https://user-images.githubusercontent.com/82796039/123066880-6d84fd80-d44b-11eb-9e7c-a7e8567048b8.jpg)
-```
+
 #결제서비스 재기동
 cd payment
 mvn spring-boot:run
 
 #대여요청(성공확인)
 http POST http://localhost:8081/reserves price=33333 startDay=20210624 endDay=20210624 customer=andy  status=approve
-```
+
 ![3-2](https://user-images.githubusercontent.com/82796039/123066946-7bd31980-d44b-11eb-81fe-b14962a14b12.jpg)
 - 또한 과도한 서비스 요청시에 서비스 장애가 일어날수 있다.(서킷브레이커, 폴백 처리는 운영단계에서 설명한다.)
 
