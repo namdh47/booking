@@ -200,11 +200,11 @@ mvn spring-boot:run
 ```
 
 
-## DDD 의 적용
+## DDD(Domain-Driven Design)의 적용
 - 각 서비스내에 도출된 핵심 Aggregate Root 객체를 Entity 로 선언하였다: (예시는 reserve 마이크로 서비스 - reserve.java).
 - Event Storming을 통한 아키텍쳐와 Domain 구조로 DDD의 적용을 확인하며, 각 Domain에 해당하는 Entity는 다음과 같다.
 - **Reserve(대여요청) / Payment(결제) / lend(대여매칭) / Promotion(할인대여)**
-![22222](https://user-images.githubusercontent.com/82796039/123018807-33473c00-d40a-11eb-92dd-04f36b5fec3f.jpg)
+![22222](https://user-images.githubusercontent.com/82796039/123024190-a0130400-d413-11eb-84c2-6b582d6d83f3.jpg)
 
 ```
 package booking;
