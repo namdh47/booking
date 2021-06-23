@@ -395,40 +395,38 @@ public interface PaymentService {
 ```
 - 주문을 받은 직후(@PostPersist) 결제를 요청하도록 처리
 ```
-# Catch.java (Entity)
+# Reserve.java (Entity)
 
-
-    @PostPersist
+   @PostPersist
     public void onPostPersist(){
-        
-        CatchRequested catchRequested = new CatchRequested();
-        BeanUtils.copyProperties(this, catchRequested);
-        catchRequested.publishAfterCommit();
 
-        //Following code causes dependency to external APIs
-        // it is NOT A GOOD PRACTICE. instead, Event-Policy mapping is recommended.
-        taxiteam.external.Payment payment = new taxiteam.external.Payment();
-        // mappings goes here 
+        ReserveRequested reserveRequested = new ReserveRequested();
+        BeanUtils.copyProperties(this, reserveRequested);
+        reserveRequested.publishAfterCommit();
+
+        booking.external.Payment payment = new booking.external.Payment();
+
         payment.setMatchId(Long.valueOf(this.getId()));
         payment.setPrice(Integer.valueOf(this.getPrice()));
         payment.setPaymentAction("Approved");
         payment.setCustomer(String.valueOf(this.getCustomer()));
-        payment.setStartingPoint(String.valueOf(this.getStartingPoint()));
-        payment.setDestination(String.valueOf(this.getDestination()));
-        CatchApplication.applicationContext.getBean(taxiteam.external.PaymentService.class)
-            .paymentRequest(payment);
+        payment.setStartDay(String.valueOf(this.getStartDay()));
+        payment.setEndDay(String.valueOf(this.getEndDay()));
+        payment.setName(String.valueOf(this.getName()));
 
+        ReserveApplication.applicationContext.getBean(booking.external.PaymentService.class)
+            .paymentRequest(payment);
     }
 ```
 ---
 #### 검증 및 테스트
-- 서비스를 임의로 정지하여 
+- 서비스를 임의로 정지하면 
 - 동기식 호출에서는 호출 시간에 따른 타임 커플링이 발생하며, 결제 시스템이 장애가 나면 주문도 못받는다는 것을 확인:
 ```
 # 결제 (payment) 서비스를 잠시 내려놓음 (ctrl+c)
 
 #주문처리
-http POST http://localhost:8081/catches price=200000 startingPoint=Daejeon destination=Seoul customer=David  status=approve   # Fail
+http POST http://localhost:8081/reserves price=200000 startingPoint=Daejeon destination=Seoul customer=David  status=approve   # Fail
 ```
 ![image](https://user-images.githubusercontent.com/11955597/120089415-08343a00-c135-11eb-9e81-c4daca7ce905.png)
 
