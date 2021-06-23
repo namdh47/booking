@@ -566,10 +566,13 @@ mypage view조회
 pipeline build script 는 각 프로젝트 폴더 이하에 Dockerfile 과 deployment.yml/service.yaml 에 포함되었다.
 
 * Continuos Integration Pipeline (Azure Cloud Devops)
-![image](https://user-images.githubusercontent.com/11955597/120958041-cee17700-c791-11eb-8dc8-81466f578aca.png)
+![image](https://user-images.githubusercontent.com/82796039/123122083-ac817600-d480-11eb-99e3-e40e0fbc2585.png)
+![image](https://user-images.githubusercontent.com/82796039/123121995-98d60f80-d480-11eb-8168-c9218ec2a6d0.png)
+
 
 * Continuos Deployment Pipeline (Azure Cloud Devops)
-![image](https://user-images.githubusercontent.com/11955597/120959115-0ea95e00-c794-11eb-812c-c916d3dba919.png)
+![image](https://user-images.githubusercontent.com/82796039/123122198-c6bb5400-d480-11eb-812a-8f30fa9010c4.png)
+
 
 
 ## 동기식 호출 / 서킷 브레이킹 / 장애격리
