@@ -448,26 +448,25 @@ http http://localhost:8082/lends matchId=2 lender=andynam   #정상적으로 매
 ![9-4](https://user-images.githubusercontent.com/82796039/123078200-b346c380-d455-11eb-9d5d-4e1b6d595175.jpg)
 
 ## SAGA / Correlation
-- 픽업(pickup) 시스템에서 상태가 매칭으로 변경되면 대여승인(lend) 시스템 원천데이터의 상태(status) 정보가 update된다
+- 대여승인(lend) 시스템에서 상태가 매칭으로 변경되면 대여요청(reserve) 시스템 원천데이터의 상태(status) 정보가 update된다
 ```
     }
     
-    //PickUp이 됐을 경우
+    //대여승인이 됐을 경우
     @StreamListener(KafkaProcessor.INPUT)
-    public void wheneverPickupAssigned_StatusUpdate(@Payload PickupAssigned pickupAssigned){
-
-        if(pickupAssigned.isMe()){
-
-            System.out.println("##### listener wheneverPickupAssigned : " + pickupAssigned.toJson());
-
-            CatchRepository.findById(pickupAssigned.getId()).ifPresent(Catch ->{
-                System.out.println("##### wheneverPickupAssigned_MatchRepository.findById : exist" );
-                Catch.setStatus(pickupAssigned.getEventType()); 
-                CatchRepository.save(Catch);
-            });
-        }
+    public void wheneverLendAssigned_StatusUpdate(@Payload LendAssigned lendAssigned){
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+        System.out.println("##### listener  : " + lendAssigned.toJson());
+        if(!lendAssigned.validate()) return;
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+        myPageRepository.findById(lendAssigned.getMatchId()).ifPresent(MyPage ->{
+            System.out.println("##### listener  : " + lendAssigned.toJson());
+            MyPage.setLender(lendAssigned.getLender());
+            MyPage.setStatus(lendAssigned.getEventType());
+            myPageRepository.save(MyPage);
+        });
+            
     }
-
 ```
 
 
@@ -476,89 +475,87 @@ http http://localhost:8082/lends matchId=2 lender=andynam   #정상적으로 매
 ```
 @Service
 public class PolicyHandler{
-    @Autowired MyPageRepository MyPageRepository;
-    @StreamListener(KafkaProcessor.INPUT)
-    public void onStringEventListener(@Payload String eventString){
-
-    }
+    @Autowired MyPageRepository myPageRepository;
 
     @StreamListener(KafkaProcessor.INPUT)
-    public void wheneverCatchCancelled_StatusUpdate(@Payload CatchCancelled catchCancelled){
+    public void wheneverReserveCancelled_StatusUpdate(@Payload ReserveCancelled reserveCancelled){
 
-       
+        if(!reserveCancelled.validate()) return;
 
-        if(catchCancelled.isMe()){
-        MyPageRepository.findById(catchCancelled.getId()).ifPresent(MyPage ->{
-            System.out.println("##### listener  : " + catchCancelled.toJson());
-            System.out.println("##### wheneverCatchCancelled_MyPageRepository.findById : exist" );
-            MyPage.setStatus(catchCancelled.getEventType());
-            MyPageRepository.save(MyPage);
+        myPageRepository.findById(reserveCancelled.getMatchId()).ifPresent(MyPage ->{
+            System.out.println("##### listener  : " + reserveCancelled.toJson());
+            System.out.println("##### wheneverReserveCancelled_MyPageRepository.findById : exist" );
+            MyPage.setStatus(reserveCancelled.getEventType());
+            myPageRepository.save(MyPage);
         });
     }
-    }
+    
     @StreamListener(KafkaProcessor.INPUT)
     public void wheneverPaymentCancelled_StatusUpdate(@Payload PaymentCancelled paymentCancelled){
 
+        if(!paymentCancelled.validate()) return;
+
       
-        if(paymentCancelled.isMe()){
-        MyPageRepository.findById(paymentCancelled.getId()).ifPresent(MyPage ->{
+        myPageRepository.findById(paymentCancelled.getMatchId()).ifPresent(MyPage ->{
             System.out.println("##### listener  : " + paymentCancelled.toJson());
-            System.out.println("##### wheneverPaymentCancelled_MyPageRepository.findById : exist" );
+            System.out.println("##### wheneverLendCancelled_MyPageRepository.findById : exist" );
             MyPage.setStatus(paymentCancelled.getEventType());
-            MyPageRepository.save(MyPage);
+            myPageRepository.save(MyPage);
         });
     }
-    }
+    
     @StreamListener(KafkaProcessor.INPUT)
     public void wheneverPaymentApproved_StatusUpdate(@Payload PaymentApproved paymentApproved){
 
-        if(paymentApproved.isMe()){
-            System.out.println("##### listener  : " + paymentApproved.toJson());
+        if(!paymentApproved.validate()) return;
 
-            MyPage mypage = new MyPage();
-            mypage.setId(paymentApproved.getMatchId());
-            mypage.setPrice(paymentApproved.getPrice());
-            mypage.setStatus(paymentApproved.getEventType());
-            mypage.setDestination(paymentApproved.getDestination());
-            mypage.setStartingPoint(paymentApproved.getStartingPoint());
-            MyPageRepository.save(mypage);
-        }
+        System.out.println("##### listener  : " + paymentApproved.toJson());
+
+        MyPage mypage = new MyPage();
+        mypage.setId(paymentApproved.getMatchId());
+        mypage.setPrice(paymentApproved.getPrice());
+        mypage.setStatus(paymentApproved.getEventType());
+        mypage.setStartDay(paymentApproved.getStartDay());
+        mypage.setEndDay(paymentApproved.getEndDay());
+        mypage.setCustomer(paymentApproved.getCustomer());
+        mypage.setName(paymentApproved.getName());
+        myPageRepository.save(mypage);            
+    }
+    
+    @StreamListener(KafkaProcessor.INPUT)
+    public void wheneverLendAssigned_StatusUpdate(@Payload LendAssigned lendAssigned){
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+        System.out.println("##### listener  : " + lendAssigned.toJson());
+        if(!lendAssigned.validate()) return;
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+        myPageRepository.findById(lendAssigned.getMatchId()).ifPresent(MyPage ->{
+            System.out.println("##### listener  : " + lendAssigned.toJson());
+            System.out.println("##### wheneverLendAssigned_MyPageRepository.findById : exist" );
+            MyPage.setLender(lendAssigned.getLender());
+            MyPage.setStatus(lendAssigned.getEventType());
+            myPageRepository.save(MyPage);
+        });           
+    }
+    
+    @StreamListener(KafkaProcessor.INPUT)
+    public void wheneverLendCancelled_StatusUpdate(@Payload LendCancelled lendCancelled){
+
+        if(!lendCancelled.validate()) return;
+        myPageRepository.findById(lendCancelled.getMatchId()).ifPresent(MyPage ->{
+            System.out.println("##### listener  : " + lendCancelled.toJson());
+            System.out.println("##### wheneverLendCancelled_MyPageRepository.findById : exist" );
+            MyPage.setStatus(lendCancelled.getEventType());
+            myPageRepository.save(MyPage);
+        });            
     }
 
     @StreamListener(KafkaProcessor.INPUT)
-    public void wheneverPickupAssigned_StatusUpdate(@Payload PickupAssigned pickupAssigned){
+    public void whatever(@Payload String eventString){}
 
-        System.out.println("this is wheneverPickupAssigned_StatusUpdate");
-        if(pickupAssigned.isMe()){
-        MyPageRepository.findById(pickupAssigned.getMatchId()).ifPresent(MyPage ->{
-            System.out.println("##### listener  : " + pickupAssigned.toJson());
-            System.out.println("##### wheneverPickupAssigned_MyPageRepository.findById : exist" );
-            MyPage.setDriver(pickupAssigned.getDriver());
-            MyPage.setStatus(pickupAssigned.getEventType());
-            MyPageRepository.save(MyPage);
-        });
-    }
-
-    }
-
-    @StreamListener(KafkaProcessor.INPUT)
-    public void wheneverPickupCancelled_StatusUpdate(@Payload PickupCancelled pickupCancelled){
-
-
-        if(pickupCancelled.isMe()){
-        MyPageRepository.findById(pickupCancelled.getId()).ifPresent(MyPage ->{
-            System.out.println("##### listener  : " + pickupCancelled.toJson());
-            System.out.println("##### wheneverPickupCancelled_MyPageRepository.findById : exist" );
-            MyPage.setStatus(pickupCancelled.getEventType());
-            MyPageRepository.save(MyPage);
-        });
-    }
-    }
-
+}
 ```
 mypage view조회
-
-![image](https://user-images.githubusercontent.com/11955597/120090295-48e38180-c13c-11eb-9903-a845049e6862.png)
+![9-5](https://user-images.githubusercontent.com/82796039/123084621-5569aa00-d45c-11eb-8dd2-cd57cc0509de.jpg)
 
 
 # 베포 및 운영
