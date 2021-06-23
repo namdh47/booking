@@ -345,9 +345,9 @@ http http://localhost:8082/lends matchId=2 lenrer=andy
 ## 폴리글랏 퍼시스턴스
 - reserve 서비스는 다른 서비스와 구별을 위해 hsqldb를 사용 하였다.
 이를 위해 reserve 내 pom.xml에 dependency를 h2database에서 hsqldb로 변경 하였다.
-
-# (reserve) pom.xml
-
+```
+# pom.xml
+```
 ![aaa](https://user-images.githubusercontent.com/82796039/123068761-27309e00-d44d-11eb-8ace-a3c516c0c3f7.jpg)
 
 
@@ -356,37 +356,43 @@ http http://localhost:8082/lends matchId=2 lenrer=andy
 호출 프로토콜은 이미 앞서 Rest Repository에 의해 노출되어있는 REST 서비스를 **FeignClient** 를 이용하여 호출하도록 한다. 
 
 - 결제서비스를 호출하기 위하여 Stub과 (FeignClient)를 이용하여 Service 대행 인터페이스(Proxy)를 구현 
-
-# PaymentService.java
-![12](https://user-images.githubusercontent.com/82796039/123071405-98715080-d44f-11eb-9130-473bd6793c84.jpg)
 ```
+# PaymentService.java
+```
+![12](https://user-images.githubusercontent.com/82796039/123071405-98715080-d44f-11eb-9130-473bd6793c84.jpg)
+
 - 주문을 받은 직후(@PostPersist) 결제를 요청하도록 처리
 ```
 # Reserve.java (Entity)
+```
 ![13](https://user-images.githubusercontent.com/82796039/123071593-c191e100-d44f-11eb-9277-68b66a138759.jpg)
 
 
 #### 검증 및 테스트
 - 서비스를 임의로 정지하면 
 - 동기식 호출에서는 호출 시간에 따른 타임 커플링이 발생하며, 결제 시스템이 장애가 나면 대여요청에 대한 주문처리도 되지 않는 것이 확인 됨:
-
+```
 # 결제 (payment) 서비스를 잠시 내려놓음 (ctrl+c)
-
+```
 #대여요청(실패확인)
+```
 http POST http://localhost:8081/reserves price=11111 startDay=20210624 endDay=20210624 customer=andy  status=approve
-
+```
 ![3-1](https://user-images.githubusercontent.com/82796039/123066880-6d84fd80-d44b-11eb-9e7c-a7e8567048b8.jpg)
 
 #결제서비스 재기동
+```
 cd payment
 mvn spring-boot:run
+```
 
 #대여요청(성공확인)
+```
 http POST http://localhost:8081/reserves price=33333 startDay=20210624 endDay=20210624 customer=andy  status=approve
-
+```
 ![3-2](https://user-images.githubusercontent.com/82796039/123066946-7bd31980-d44b-11eb-81fe-b14962a14b12.jpg)
 - 또한 과도한 서비스 요청시에 서비스 장애가 일어날수 있다.(서킷브레이커, 폴백 처리는 운영단계에서 설명한다.)
-
+---
 
 ## 비동기식 호출 / 시간적 디커플링 / 장애격리 / 최종 (Eventual) 일관성
 
@@ -398,7 +404,7 @@ http POST http://localhost:8081/reserves price=33333 startDay=20210624 endDay=20
 ![bbb](https://user-images.githubusercontent.com/82796039/123069257-94dcca00-d44d-11eb-9c12-bdba62202522.jpg)   
 
 - lend 서비스에서는 결제승인 이벤트에 대해서 이를 수신하여 자신의 정책을 처리하도록 PolicyHandler 를 구현한다:
-```
+
 ![ccc](https://user-images.githubusercontent.com/82796039/123069363-af16a800-d44d-11eb-8476-21be47d33e97.jpg)
 
 
