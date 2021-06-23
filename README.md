@@ -351,7 +351,6 @@ http http://localhost:8082/lends matchId=2 lenrer=andy
 ```
 # (reserve) pom.xml
 ![aaa](https://user-images.githubusercontent.com/82796039/123068761-27309e00-d44d-11eb-8ace-a3c516c0c3f7.jpg)
-```
 
 ## 동기식 호출과 Fallback 처리
 - 분석 단계에서의 조건 중 하나로 콜요청(reserve)->결제(payment) 간의 호출은 동기식 일관성을 유지하는 트랜잭션으로 처리하기로 하였다.
@@ -361,47 +360,12 @@ http http://localhost:8082/lends matchId=2 lenrer=andy
 
 ```
 # (reserve) PaymentService.java
-
-package booking.external;
-
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-
-import java.util.Date;
-
-@FeignClient(name="payment", url="http://localhost:8083")
-public interface PaymentService {
-
-    @RequestMapping(method= RequestMethod.POST, path="/payments")
-    public void paymentRequest(@RequestBody Payment payment);
-}
+![12](https://user-images.githubusercontent.com/82796039/123071405-98715080-d44f-11eb-9130-473bd6793c84.jpg)
 ```
 - 주문을 받은 직후(@PostPersist) 결제를 요청하도록 처리
 ```
 # Reserve.java (Entity)
-
-   @PostPersist
-    public void onPostPersist(){
-
-        ReserveRequested reserveRequested = new ReserveRequested();
-        BeanUtils.copyProperties(this, reserveRequested);
-        reserveRequested.publishAfterCommit();
-
-        booking.external.Payment payment = new booking.external.Payment();
-
-        payment.setMatchId(Long.valueOf(this.getId()));
-        payment.setPrice(Integer.valueOf(this.getPrice()));
-        payment.setPaymentAction("Approved");
-        payment.setCustomer(String.valueOf(this.getCustomer()));
-        payment.setStartDay(String.valueOf(this.getStartDay()));
-        payment.setEndDay(String.valueOf(this.getEndDay()));
-        payment.setName(String.valueOf(this.getName()));
-
-        ReserveApplication.applicationContext.getBean(booking.external.PaymentService.class)
-            .paymentRequest(payment);
-    }
+![13](https://user-images.githubusercontent.com/82796039/123071593-c191e100-d44f-11eb-9277-68b66a138759.jpg)
 ```
 ---
 #### 검증 및 테스트
