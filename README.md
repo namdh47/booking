@@ -435,11 +435,11 @@ http POST http://localhost:8081/reserves price=33333 startDay=20210624 endDay=20
  
 ```
 ![bbb](https://user-images.githubusercontent.com/82796039/123069257-94dcca00-d44d-11eb-9c12-bdba62202522.jpg)   
-```
+
 - lend 서비스에서는 결제승인 이벤트에 대해서 이를 수신하여 자신의 정책을 처리하도록 PolicyHandler 를 구현한다:
 ```
 ![ccc](https://user-images.githubusercontent.com/82796039/123069363-af16a800-d44d-11eb-8476-21be47d33e97.jpg)
-```
+
 
 
 ### 시간적 디커플링 / 장애격리
