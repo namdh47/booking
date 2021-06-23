@@ -40,7 +40,7 @@ public class PolicyHandler{
             lendRepository.delete(Lend);
         });
 
-        //취소 요청 시, CatchReqList에서도 삭제 추가 0
+        //취소 요청 시, ReserveReqList에서도 삭제 추가 0
         ReserveReqListRepository.findById(paymentCancelled.getMatchId()).ifPresent(Lend->{
             ReserveReqListRepository.delete(Lend);
         });
