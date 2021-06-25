@@ -591,6 +591,7 @@ pipeline build script 는 각 프로젝트 폴더 이하에 Dockerfile 과 deplo
 ![111](https://user-images.githubusercontent.com/82796039/123353309-3114e700-d59c-11eb-8ef8-cd779beb1571.jpg)
 
 - 피호출 서비스(결제:payment) 의 임의 부하 처리 - 400 밀리에서 증감 220 밀리 정도 왔다갔다 하게 설정
+
 ![444](https://user-images.githubusercontent.com/82796039/123358811-16943b00-d5a7-11eb-9f95-159397a391ef.jpg)
 ```
 
@@ -613,12 +614,12 @@ $ siege -c100 -t30S -r10 -v --content-type "application/json" 'http://reserve:80
 ![22](https://user-images.githubusercontent.com/82796039/123354964-a635eb80-d59f-11eb-8e88-bf38a6e7c7f2.jpg)
 ![33](https://user-images.githubusercontent.com/82796039/123354983-acc46300-d59f-11eb-9689-53802b7e3c6d.jpg)
 ![aa](https://user-images.githubusercontent.com/82796039/123361284-beab0380-d5a9-11eb-9eac-d9edb40218d3.jpg)
-```
-```
+
 ### 오토스케일 아웃
-- 동적 Scale out(replica의 자동적 추가,HPA) 을 통하여 시스템을 확장 해주는 후속처리가 필요.
-- 앞서 서킷 브레이커는 시스템을 안정되게 운영할 수 있게 해줬지만 사용자의 요청을 100% 받아들여주지 못했기 때문에 이에 대한 보완책으로 자동화된 확장 기능을 적용하고자 한다. 
-- 대여요청(catch) 및 결제(payment)서비스에 대한 replica를 동적으로 늘려주도록 HPA를 설정한다. 설정은 CPU 사용량이 15프로를 넘어서면 replica를 10개까지 늘려준다:
+- 동적 Scale out(replica의 자동적 추가,HPA)을 통해 시스템을 확장 해주는 설정 
+- 앞서 서킷 브레이커는 시스템을 안정되게 운영할 수 있게 해줬지만 사용자의 요청을 100% 처리가능하도록 자동화된 확장 기능 적용 
+- 대여요청(reserve) 및 결제(payment)서비스에 대한 replica를 동적으로 늘려주도록 HPA를 설정 
+- 설정은 CPU 사용량이 15프로를 넘어서면 replica를 10개까지 늘려준다:
 
 ```
 # auto scale-out 설정 (reserve/kubernetes/deployment.yml, payment/kubernetes/deployment.yml)
@@ -650,28 +651,17 @@ $ kubectl get pod -w
 
 
 ## 무정지 재배포
-* 먼저 무정지 재배포가 100% 되는 것인지 확인하기 위해서 Autoscaler 이나 CB 설정을 제거함
-- seige 로 배포작업 직전에 워크로드를 모니터링 함.
+* 먼저 무정지 재배포가 100% 되는 것인지 확인하기 위해서 eadiness 옵션이 추가된 deployment.yml을 적용
 
 ```
-$ kubectl apply -f catch/kubernetes/deployment_readiness.yml
+$ kubectl apply -f payment/kubernetes/deployment.yml
 ```
-
-* readiness 옵션이 없는 경우 배포 중 서비스 요청처리 실패
-
-![image](https://user-images.githubusercontent.com/11955597/120112926-014c0c80-c1b3-11eb-93c3-f418209b69c8.png)
-
-
-* readiness 옵션이 추가된 deployment.yml을 적용
-```
-$ kubectl apply -f catch/kubernetes/deployment.yml
-```
-![image](https://user-images.githubusercontent.com/11955597/120112818-7c60f300-c1b2-11eb-951b-1514648b01ac.png)
+![aa](https://user-images.githubusercontent.com/82796039/123363391-5c540200-d5ad-11eb-937a-8c1d00f069c7.jpg)
 
 
 * 새버전으로의 배포 시작
 ```
-kubectl set image deploy catch catch=cnateam4.azurecr.io/catch:v2 -n default
+kubectl set image deploy payment payment=cna08664.azurecr.io/payment:v2 -n default
 ```
 
 * 기존 버전과 새 버전의 catch pod 공존 중
@@ -680,13 +670,14 @@ kubectl set image deploy catch catch=cnateam4.azurecr.io/catch:v2 -n default
 
 * Availability : 100% 확인
 
-![image](https://user-images.githubusercontent.com/11955597/120113867-6f92ce00-c1b7-11eb-848c-e773d98f9ea4.png)
+![aa](https://user-images.githubusercontent.com/82796039/123361284-beab0380-d5a9-11eb-9eac-d9edb40218d3.jpg)
 
 
 ## Config Map
-* application.yml 설정 (catch 서비스)
+* application.yml 설정 (reserve 서비스)
 
 - default 부분
+
 
 ![image](https://user-images.githubusercontent.com/11955597/120114255-45daa680-c1b9-11eb-9d09-d3417b5df42f.png)
 
