@@ -406,7 +406,7 @@ http POST http://localhost:8081/reserves price=33333 startDay=20210624 endDay=20
 
 ![bbb](https://user-images.githubusercontent.com/82796039/123069257-94dcca00-d44d-11eb-9c12-bdba62202522.jpg)   
 
-- lend 서비스에서는 결제승인 이벤트에 대해서 이를 수신하여 자신의 정책을 처리하도록 PolicyHandler 를 구현한다:
+- lend 서비스에서는 결제승인 이벤트에 대해서 이를 수신하여 자신의 정책을 처리하도록 PolicyHandler를 구현한다:
 
 ![ccc](https://user-images.githubusercontent.com/82796039/123069363-af16a800-d44d-11eb-8476-21be47d33e97.jpg)
 
@@ -561,8 +561,7 @@ mypage view조회
 ![9-5](https://user-images.githubusercontent.com/82796039/123084621-5569aa00-d45c-11eb-8dd2-cd57cc0509de.jpg)
 
 
-# 베포 및 운영
-
+# 배포 및 운영
 
 ## CI/CD 설정
 - 각 구현체들은 각자의 source repository 에 구성되었고, 사용한 CI/CD 플랫폼은 Azure를 사용하였으며,
@@ -581,10 +580,9 @@ pipeline build script 는 각 프로젝트 폴더 이하에 Dockerfile 과 deplo
 ## 동기식 호출 / 서킷 브레이킹 / 장애격리
 * 서킷 브레이킹 프레임워크의 선택: Spring FeignClient 옵션을 사용하여 구현함
 
-# reserve의 PaymentService.java (reserve external 서비스)
+### reserve의 PaymentService.java (reserve external 서비스)
 ![111](https://user-images.githubusercontent.com/82796039/123353313-33774100-d59c-11eb-8e52-91cfa226cdff.jpg)
 ```
-
 - 대여 요청(catch)-->결제(payment) 시의 연결을 RESTful Request/Response 로 연동하여 구현이 되어있고, 결제 요청이 과도할 경우 CB(Circuit Breaker)를 통하여 장애격리.
 - 요청처리 쓰레드에서 처리시간이 610 밀리가 넘어서기 시작하여 어느정도 유지되면 CB 회로가 닫히도록 (요청을 빠르게 실패처리, 차단) 설정
 ```
