@@ -702,9 +702,10 @@ http POST http://reserve:8080/reserves price=10000 startDay=20160625 endDay=2016
 ![22](https://user-images.githubusercontent.com/82796039/123367761-77c30b00-d5b5-11eb-9427-7175ab91145c.jpg)
 
 * payment deploy 재배포 후 liveness 가 적용된 부분 확인
-
-![image](https://user-images.githubusercontent.com/11955597/120116296-7c68ef00-c1c2-11eb-8d32-eeadd9eb555d.png)
-
+```
+$ kubectl describe deploy reserve -n default
+```
+![33](https://user-images.githubusercontent.com/82796039/123367988-e86a2780-d5b5-11eb-84c4-7ad67687a6ba.jpg)
 
 
 
