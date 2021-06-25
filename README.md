@@ -685,7 +685,7 @@ kubectl set image deploy payment payment=cna08664.azurecr.io/payment:v2 -n defau
 $ kubectl create configmap apiurl --from-literal=url=http://payment:8080 --from-literal=fluentd-server-ip=10.xxx.xxx.xxx -n default
 $ kubectl get configmap apiurl -o yaml -n default
 ```
-![mm](https://user-images.githubusercontent.com/82796039/123366642-814b7380-d5b3-11eb-9874-1600d42c9c95.jpg)
+![33](https://user-images.githubusercontent.com/82796039/123367162-73e2b900-d5b4-11eb-85b5-eb27c55fa50e.jpg)
 
 * 위 config map으로 배포한 서비스에서 설정한 URL로 대여요청 호출
 ```
