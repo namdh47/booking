@@ -586,6 +586,7 @@ pipeline build script 는 각 프로젝트 폴더 이하에 Dockerfile 과 deplo
 - 대여 요청(catch)-->결제(payment) 시의 연결을 RESTful Request/Response 로 연동하여 구현이 되어있고, 결제 요청이 과도할 경우 CB(Circuit Breaker)를 통하여 장애격리.
 - 요청처리 쓰레드에서 처리시간이 610 밀리가 넘어서기 시작하여 어느정도 유지되면 CB 회로가 닫히도록 (요청을 빠르게 실패처리, 차단) 설정
 ```
+
 ### application.yml (reserve 서비스)
 ```
 feign:
@@ -598,39 +599,25 @@ hystrix:
     default:
       execution.isolation.thread.timeoutInMilliseconds: 610
 ```
-![111](https://user-images.githubusercontent.com/82796039/123353295-2c503300-d59c-11eb-837c-bd2bfcb83e32.jpg)
 ![111](https://user-images.githubusercontent.com/82796039/123353309-3114e700-d59c-11eb-8ef8-cd779beb1571.jpg)
 
 #### 검증 및 테스트
 - 피호출 서비스(결제:payment) 의 임의 부하 처리 - 400 밀리에서 증감 220 밀리 정도 왔다갔다 하게
-```
-### Payment.java (Entity)
 
-    @PostPersist
-    public void onPostPersist(){  //결제이력을 저장한 후 적당한 시간 끌기
-
-        ...
-        
-        try {
-            Thread.currentThread().sleep((long) (400 + Math.random() * 220));
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
+![444](https://user-images.githubusercontent.com/82796039/123358811-16943b00-d5a7-11eb-9f95-159397a391ef.jpg)
 ```
 * seige툴 사용법
 
 Default namespace 에 siege 란 이름으로 pod 생성
 $ kubectl run siege --image=cna08664/siege-nginx -n default
-
+```
 * siege pod 에 접속
 $ kubectl exec -it siege -c siege -n default -- /bin/bash
-```
 
 * 부하테스터 **siege** 툴을 통한 서킷 브레이커 동작 확인:
 - 동시사용자 100명
 - 60초 동안 10번 반복하여 실시
-
+```
 $ siege -c100 -t30S -r10 -v --content-type "application/json" 'http://reserve:8080/reserves POST {"price":"7777777", "startDay":"20210624", "endDay":"20210624", "customer":"andynam", "name":"sportscar", "status":"approve"}'
 ```
 
@@ -640,14 +627,16 @@ $ siege -c100 -t30S -r10 -v --content-type "application/json" 'http://reserve:80
 ![33](https://user-images.githubusercontent.com/82796039/123354983-acc46300-d59f-11eb-9689-53802b7e3c6d.jpg)
 ```
 * report
-![44](https://user-images.githubusercontent.com/82796039/123355003-b948bb80-d59f-11eb-89b8-9ffb8f40f344.jpg)
 
+![44](https://user-images.githubusercontent.com/82796039/123355003-b948bb80-d59f-11eb-89b8-9ffb8f40f344.jpg)
+```
 - 운영시스템은 죽지 않고 지속적으로 서킷 브레이커에 의하여 적절히 회로가 열림과 닫힘이 벌어지면서 자원을 보호하고 있음을 보여줌.
 하지만, 64.29% 가 성공하였고, 35.71%가 실패했다는 것은 고객 사용성에 있어 좋지 않기 때문에 Retry 설정과
 동적 Scale out(replica의 자동적 추가,HPA) 을 통하여 시스템을 확장 해주는 후속처리가 필요.
 
 
 ## 오토스케일 아웃
+
 - 앞서 서킷 브레이커는 시스템을 안정되게 운영할 수 있게 해줬지만 사용자의 요청을 100% 받아들여주지 못했기 때문에 이에 대한 보완책으로 자동화된 확장 기능을 적용하고자 한다. 
 - 대여요청(catch) 및 결제(payment)서비스에 대한 replica를 동적으로 늘려주도록 HPA를 설정한다. 설정은 CPU 사용량이 15프로를 넘어서면 replica를 10개까지 늘려준다:
 
