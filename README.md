@@ -601,7 +601,6 @@ hystrix:
 ![111](https://user-images.githubusercontent.com/82796039/123353295-2c503300-d59c-11eb-837c-bd2bfcb83e32.jpg)
 ![111](https://user-images.githubusercontent.com/82796039/123353309-3114e700-d59c-11eb-8ef8-cd779beb1571.jpg)
 
----
 #### 검증 및 테스트
 - 피호출 서비스(결제:payment) 의 임의 부하 처리 - 400 밀리에서 증감 220 밀리 정도 왔다갔다 하게
 ```
