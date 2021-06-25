@@ -587,7 +587,7 @@ pipeline build script 는 각 프로젝트 폴더 이하에 Dockerfile 과 deplo
 - 요청처리 쓰레드에서 처리시간이 610 밀리가 넘어서기 시작하여 어느정도 유지되면 CB 회로가 닫히도록 (요청을 빠르게 실패처리, 차단) 설정
 ```
 ### application.yml (reserve 서비스)
-
+```
 feign:
   hystrix:
     enabled: true
@@ -622,21 +622,20 @@ hystrix:
 
 Default namespace 에 siege 란 이름으로 pod 생성
 $ kubectl run siege --image=cna08664/siege-nginx -n default
-```
-* siege pod 에 접속
 
+* siege pod 에 접속
 $ kubectl exec -it siege -c siege -n default -- /bin/bash
 ```
 
 * 부하테스터 **siege** 툴을 통한 서킷 브레이커 동작 확인:
 - 동시사용자 100명
 - 60초 동안 10번 반복하여 실시
-```
+
 $ siege -c100 -t30S -r10 -v --content-type "application/json" 'http://reserve:8080/reserves POST {"price":"7777777", "startDay":"20210624", "endDay":"20210624", "customer":"andynam", "name":"sportscar", "status":"approve"}'
 ```
 
 - 부하 발생하여 서킷 브레이커가 발동하여 요청에 실패하였고, 밀린 부하가 결재시스템에서 처리되면서 다시 대여요청을 받기 시작한다.
-```
+
 ![22](https://user-images.githubusercontent.com/82796039/123354964-a635eb80-d59f-11eb-8e88-bf38a6e7c7f2.jpg)
 ![33](https://user-images.githubusercontent.com/82796039/123354983-acc46300-d59f-11eb-9689-53802b7e3c6d.jpg)
 ```
