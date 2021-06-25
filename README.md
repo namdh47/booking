@@ -358,7 +358,7 @@ http http://localhost:8082/lends matchId=2 lenrer=andy
 - 분석 단계에서의 조건 중 하나로 대여요청(reserve)->결제(payment) 간의 호출은 동기식 일관성을 유지하는 트랜잭션으로 처리하기로 하였다.
 호출 프로토콜은 이미 앞서 Rest Repository에 의해 노출되어있는 REST 서비스를 **FeignClient** 를 이용하여 호출하도록 한다. 
 
-- 결제서비스를 호출하기 위하여 Stub과 (FeignClient)를 이용하여 Service 대행 인터페이스(Proxy)를 구현 
+- 결제서비스를 호출하기 위하여 FeignClient를 이용하여 Service 대행 인터페이스(Proxy)를 구현 
 ```
 # PaymentService.java
 ```
