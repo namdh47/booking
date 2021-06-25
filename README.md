@@ -565,7 +565,8 @@ public class PolicyHandler{
 
 ## Azure Cloud 설정화면
 - cna08664 계정으로 Azure에 서비스가 올라와 있다.
-![111](https://user-images.githubusercontent.com/82796039/123378246-74d11600-d5c7-11eb-9711-18b39f85665b.jpg)
+![ddd](https://user-images.githubusercontent.com/82796039/123378680-06408800-d5c8-11eb-932a-f0972c2a9d00.jpg)
+![111](https://user-images.githubusercontent.com/82796039/123378749-1a848500-d5c8-11eb-81d0-520df4f1c030.jpg)
 ![222](https://user-images.githubusercontent.com/82796039/123378256-78649d00-d5c7-11eb-8298-ffa4152112f4.jpg)
 
 
