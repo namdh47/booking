@@ -651,7 +651,7 @@ $ kubectl get pod -w
 
 
 ## 무정지 재배포
-* 먼저 무정지 재배포가 100% 되는 것인지 확인하기 위해서 eadiness 옵션이 추가된 deployment.yml을 적용
+* 먼저 무정지 재배포가 100% 되는 것인지 확인하기 위해서 Readiness 옵션이 추가된 deployment.yml을 적용
 
 ```
 $ kubectl apply -f payment/kubernetes/deployment.yml
@@ -695,13 +695,13 @@ http POST http://reserve:8080/reserves price=10000 startDay=20160625 endDay=2016
 
 ## Self-healing (Liveness Probe)
 
-* catch 서비스 정상 확인
-![zz](https://user-images.githubusercontent.com/82796039/123365824-0b92d800-d5b2-11eb-8d5a-787e1d87b5b4.jpg)
+* payment 서비스 정상 확인
+![11](https://user-images.githubusercontent.com/82796039/123367749-709bfd00-d5b5-11eb-9fc3-5afa65085b0d.jpg)
 
-* deployment.yml (reserve 서비스)에 Liveness Probe 옵션 추가
-![cc](https://user-images.githubusercontent.com/82796039/123365471-4ba58b00-d5b1-11eb-9609-e8206dee9fec.jpg)
+* deployment.yml (payment 서비스)에 Liveness Probe 옵션 추가
+![22](https://user-images.githubusercontent.com/82796039/123367761-77c30b00-d5b5-11eb-9427-7175ab91145c.jpg)
 
-* catch deploy 재배포 후 liveness 가 적용된 부분 확인
+* payment deploy 재배포 후 liveness 가 적용된 부분 확인
 
 ![image](https://user-images.githubusercontent.com/11955597/120116296-7c68ef00-c1c2-11eb-8d32-eeadd9eb555d.png)
 
