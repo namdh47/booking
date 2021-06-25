@@ -197,13 +197,16 @@ mvn spring-boot:run
 
 cd mypage
 mvn spring-boot:run  
+
+cd gateway
+mvn spring-boot:run  
 ```
 
 
 ## DDD(Domain-Driven Design)의 적용
 - 각 서비스내에 도출된 핵심 Aggregate Root 객체를 Entity 로 선언하였다: (예시는 reserve 마이크로 서비스 - reserve.java).
 - Event Storming을 통한 아키텍쳐와 Domain 구조로 DDD의 적용을 확인하며, 각 Domain에 해당하는 Entity는 다음과 같다.
-- **Reserve(대여요청) / Payment(결제) / lend(대여매칭) / Promotion(할인대여)**
+- **reserve(대여요청) / payment(결제) / lend(대여매칭) / promotion(할인대여) / mypage(마이페이지)**
 ![22222](https://user-images.githubusercontent.com/82796039/123024190-a0130400-d413-11eb-84c2-6b582d6d83f3.jpg)
 
 ```
@@ -352,7 +355,7 @@ http http://localhost:8082/lends matchId=2 lenrer=andy
 
 
 ## 동기식 호출과 Fallback 처리
-- 분석 단계에서의 조건 중 하나로 콜요청(reserve)->결제(payment) 간의 호출은 동기식 일관성을 유지하는 트랜잭션으로 처리하기로 하였다.
+- 분석 단계에서의 조건 중 하나로 대여요청(reserve)->결제(payment) 간의 호출은 동기식 일관성을 유지하는 트랜잭션으로 처리하기로 하였다.
 호출 프로토콜은 이미 앞서 Rest Repository에 의해 노출되어있는 REST 서비스를 **FeignClient** 를 이용하여 호출하도록 한다. 
 
 - 결제서비스를 호출하기 위하여 Stub과 (FeignClient)를 이용하여 Service 대행 인터페이스(Proxy)를 구현 
@@ -448,7 +451,7 @@ http http://localhost:8082/lends matchId=2 lender=andynam   #정상적으로 매
 ![9-4](https://user-images.githubusercontent.com/82796039/123078200-b346c380-d455-11eb-9d5d-4e1b6d595175.jpg)
 
 ## SAGA / Correlation
-- 대여승인(lend) 시스템에서 상태가 매칭으로 변경되면 대여요청(reserve) 시스템 원천데이터의 상태(status) 정보가 update된다
+- 대여승인(lend) 시스템에서 상태가 승인으로 변경되면 대여요청(reserve) 시스템 데이터 상태(status)를 update 한다
 ```
     }
     
@@ -471,7 +474,7 @@ http http://localhost:8082/lends matchId=2 lender=andynam   #정상적으로 매
 
 
 ## CQRS
-- status가 변경될때마다 event를 수신하여 조회하도록 별도의 view를 구현하여 명령과 조회를 분리했다. 
+- status가 변경될때마다 event를 수신하여 조회하도록 mypage에 별도의 view를 구현하여 명령과 조회를 분리했다. 
 ```
 @Service
 public class PolicyHandler{
@@ -576,25 +579,16 @@ pipeline build script 는 각 프로젝트 폴더 이하에 Dockerfile 과 deplo
 
 
 ## 동기식 호출 / 서킷 브레이킹 / 장애격리
-* 서킷 브레이킹 프레임워크의 선택: Spring FeignClient + Hystrix 옵션을 사용하여 구현함
-```
-# PaymentService.java (catch external 서비스)
+* 서킷 브레이킹 프레임워크의 선택: Spring FeignClient 옵션을 사용하여 구현함
 
-//@FeignClient(name="payment", url="http://localhost:8083")
-@FeignClient(name="payment", url="${api.payment.url}")
-public interface PaymentService {
-
-    @RequestMapping(method= RequestMethod.POST, path="/payments")
-    public void paymentRequest(@RequestBody Payment payment);
-
-}
-
+# reserve의 PaymentService.java (reserve external 서비스)
+![111](https://user-images.githubusercontent.com/82796039/123353313-33774100-d59c-11eb-8e52-91cfa226cdff.jpg)
 ```
 
-- 시나리오는 택시 요청(catch)-->결제(payment) 시의 연결을 RESTful Request/Response 로 연동하여 구현이 되어있고, 결제 요청이 과도할 경우 CB(Circuit Breaker) 를 통하여 장애격리.
-- Hystrix 를 설정:  요청처리 쓰레드에서 처리시간이 610 밀리가 넘어서기 시작하여 어느정도 유지되면 CB 회로가 닫히도록 (요청을 빠르게 실패처리, 차단) 설정
+- 대여 요청(catch)-->결제(payment) 시의 연결을 RESTful Request/Response 로 연동하여 구현이 되어있고, 결제 요청이 과도할 경우 CB(Circuit Breaker)를 통하여 장애격리.
+- 요청처리 쓰레드에서 처리시간이 610 밀리가 넘어서기 시작하여 어느정도 유지되면 CB 회로가 닫히도록 (요청을 빠르게 실패처리, 차단) 설정
 ```
-# application.yml (catch 서비스)
+# application.yml (reserve 서비스)
 
 feign:
   hystrix:
@@ -607,8 +601,8 @@ hystrix:
       execution.isolation.thread.timeoutInMilliseconds: 610
 
 ```
-![image](https://user-images.githubusercontent.com/11955597/120107288-7b709700-c19b-11eb-9aa5-e89f60ab9537.png)
-
+![111](https://user-images.githubusercontent.com/82796039/123353295-2c503300-d59c-11eb-837c-bd2bfcb83e32.jpg)
+![111](https://user-images.githubusercontent.com/82796039/123353309-3114e700-d59c-11eb-8ef8-cd779beb1571.jpg)
 
 ---
 #### 검증 및 테스트
@@ -628,10 +622,10 @@ hystrix:
         }
     }
 ```
-* seige 툴 사용법
+* seige툴 사용법
 ```
-siege가 설치된 apexacme/nginx 이미지로 default namespace 에 siege 란 이름으로 pod 생성
-$ kubectl run siege --image=apexacme/siege-nginx -n default
+Default namespace 에 siege 란 이름으로 pod 생성
+$ kubectl run siege --image=cna08664/siege-nginx -n default
 
 siege pod 에 접속
 $ kubectl exec -it siege -c siege -n default -- /bin/bash
@@ -641,42 +635,34 @@ $ kubectl exec -it siege -c siege -n default -- /bin/bash
 - 동시사용자 100명
 - 60초 동안 10번 반복하여 실시
 ```
-$ siege -c100 -t60S -r10 -v --content-type "application/json" 'http://catch:8080/catches POST {"price":"250000", "startingPoint":"Kwangjoo", "destination":"Chooncheon", "customer":"SteveOh", "status":"approve"}'
+$ siege -c100 -t30S -r10 -v --content-type "application/json" 'http://reserve:8080/reserves POST {"price":"7777777", "startDay":"20210624", "endDay":"20210624", "customer":"andynam", "name":"sportscar", "status":"approve"}'
 ```
 
-* 부하 발생하여 CB가 발동하여 요청 실패처리하였고, 밀린 부하가 pay에서 처리되면서 다시 order를 받기 시작
-![image](https://user-images.githubusercontent.com/11955597/120107709-1027c480-c19d-11eb-90fd-7cda05bbb08b.png)
-
+* 부하 발생하여 서킷 브레이커가 발동하여 요청에 실패하였고, 밀린 부하가 결재시스템에서 처리되면서 다시 대여요청을 받기 시작한다.
+![22](https://user-images.githubusercontent.com/82796039/123354964-a635eb80-d59f-11eb-8e88-bf38a6e7c7f2.jpg)
+![33](https://user-images.githubusercontent.com/82796039/123354983-acc46300-d59f-11eb-9689-53802b7e3c6d.jpg)
 
 * report
+![44](https://user-images.githubusercontent.com/82796039/123355003-b948bb80-d59f-11eb-89b8-9ffb8f40f344.jpg)
 
-![image](https://user-images.githubusercontent.com/11955597/120108116-b32d0e00-c19e-11eb-9ca5-684a9f32590b.png)
-
-
-- 운영시스템은 죽지 않고 지속적으로 CB 에 의하여 적절히 회로가 열림과 닫힘이 벌어지면서 자원을 보호하고 있음을 보여줌.
+- 운영시스템은 죽지 않고 지속적으로 서킷 브레이커에 의하여 적절히 회로가 열림과 닫힘이 벌어지면서 자원을 보호하고 있음을 보여줌.
 하지만, 64.29% 가 성공하였고, 35.71%가 실패했다는 것은 고객 사용성에 있어 좋지 않기 때문에 Retry 설정과
-동적 Scale out (replica의 자동적 추가,HPA) 을 통하여 시스템을 확장 해주는 후속처리가 필요.
+동적 Scale out(replica의 자동적 추가,HPA) 을 통하여 시스템을 확장 해주는 후속처리가 필요.
 
 
 ## 오토스케일 아웃
-- 앞서 CB 는 시스템을 안정되게 운영할 수 있게 해줬지만 사용자의 요청을 100% 받아들여주지 못했기 때문에 이에 대한 보완책으로 자동화된 확장 기능을 적용하고자 한다. 
-
-- 요청(catch) 및 결제(payment)서비스에 대한 replica 를 동적으로 늘려주도록 HPA 를 설정한다. 설정은 CPU 사용량이 15프로를 넘어서면 replica 를 10개까지 늘려준다:
-
-```
-# auto scale-out 설정 (catch/kubernetes/deployment.yml, payment/kubernetes/deployment.yml)
-```
-![image](https://user-images.githubusercontent.com/11955597/120108512-69ddbe00-c1a0-11eb-882e-4584d932db3b.png)
-
+- 앞서 서킷 브레이커는 시스템을 안정되게 운영할 수 있게 해줬지만 사용자의 요청을 100% 받아들여주지 못했기 때문에 이에 대한 보완책으로 자동화된 확장 기능을 적용하고자 한다. 
+- 대여요청(catch) 및 결제(payment)서비스에 대한 replica를 동적으로 늘려주도록 HPA를 설정한다. 설정은 CPU 사용량이 15프로를 넘어서면 replica를 10개까지 늘려준다:
 
 ```
-$ kubectl autoscale deploy catch --min=1 --max=10 --cpu-percent=15
+# auto scale-out 설정 (reserve/kubernetes/deployment.yml, payment/kubernetes/deployment.yml)
+```
+![55](https://user-images.githubusercontent.com/82796039/123355348-763b1800-d5a0-11eb-987f-2127ccc53612.jpg)
+```
+$ kubectl autoscale deploy reserve --min=1 --max=10 --cpu-percent=15
 $ kubectl autoscale deploy payment --min=1 --max=10 --cpu-percent=15
 ```
-![image](https://user-images.githubusercontent.com/11955597/120108569-a4475b00-c1a0-11eb-9aac-69a5f36b3451.png)
-
-
-
+![11](https://user-images.githubusercontent.com/82796039/123355489-bd290d80-d5a0-11eb-9ba7-419a7f1cb152.jpg)
 ---
 #### 검증 및 테스트
 - CB 에서 했던 방식대로 워크로드를 2분 동안 걸어준다.
