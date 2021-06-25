@@ -664,12 +664,10 @@ $ kubectl apply -f payment/kubernetes/deployment.yml
 kubectl set image deploy payment payment=cna08664.azurecr.io/payment:v2 -n default
 ```
 
-* 기존 버전과 새 버전의 catch pod 공존 중
-
-![image](https://user-images.githubusercontent.com/11955597/120113839-525dff80-c1b7-11eb-97ec-6ff76ae07b4c.png)
+* 기존 버전과 새 버전의 reserve pod 공존 중
+![zz](https://user-images.githubusercontent.com/82796039/123366459-3c274180-d5b3-11eb-86f6-8b3652b5e9cd.jpg)
 
 * Availability : 100% 확인
-
 ![aa](https://user-images.githubusercontent.com/82796039/123361284-beab0380-d5a9-11eb-9eac-d9edb40218d3.jpg)
 
 
@@ -685,15 +683,15 @@ kubectl set image deploy payment payment=cna08664.azurecr.io/payment:v2 -n defau
 * config map 생성 후 조회
 ```
 $ kubectl create configmap apiurl --from-literal=url=http://payment:8080 --from-literal=fluentd-server-ip=10.xxx.xxx.xxx -n default
+$ kubectl get configmap apiurl -o yaml -n default
 ```
-![image](https://user-images.githubusercontent.com/11955597/120114378-edf06f80-c1b9-11eb-8585-dac97058bb1b.png)
+![mm](https://user-images.githubusercontent.com/82796039/123366642-814b7380-d5b3-11eb-9874-1600d42c9c95.jpg)
 
-* 위 config map으로 배포한 서비스에서 설정한 URL로 택시요청 호출
+* 위 config map으로 배포한 서비스에서 설정한 URL로 대여요청 호출
 ```
-http POST http://catch:8080/catches price=250000 startingPoint=Busan destination=Seoul customer=Peter  status=approve
+http POST http://reserve:8080/reserves price=10000 startDay=20160625 endDay=20160630 customer=peter status=Approved name=TedyBear
 ```
-![image](https://user-images.githubusercontent.com/11955597/120114562-a3bbbe00-c1ba-11eb-8c04-4c52713c4abd.png)
-
+![11](https://user-images.githubusercontent.com/82796039/123366853-e7d09180-d5b3-11eb-947c-4c8ce98dc825.jpg)
 
 ## Self-healing (Liveness Probe)
 
