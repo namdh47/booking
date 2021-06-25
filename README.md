@@ -563,6 +563,12 @@ public class PolicyHandler{
 
 # 배포 및 운영
 
+## Azure Cloud 설정화면
+- cna08664 계정으로 Azure에 서비스가 올라와 있다.
+![111](https://user-images.githubusercontent.com/82796039/123378246-74d11600-d5c7-11eb-9711-18b39f85665b.jpg)
+![222](https://user-images.githubusercontent.com/82796039/123378256-78649d00-d5c7-11eb-8298-ffa4152112f4.jpg)
+
+
 ## CI/CD 설정
 - 각 구현체들은 각자의 source repository 에 구성되었고, 사용한 CI/CD 플랫폼은 Azure를 사용하였으며,
 pipeline build script 는 각 프로젝트 폴더 이하에 Dockerfile 과 deployment.yml/service.yaml 에 포함되었다.
