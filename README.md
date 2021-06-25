@@ -612,9 +612,8 @@ $ siege -c100 -t30S -r10 -v --content-type "application/json" 'http://reserve:80
 
 ![22](https://user-images.githubusercontent.com/82796039/123354964-a635eb80-d59f-11eb-8e88-bf38a6e7c7f2.jpg)
 ![33](https://user-images.githubusercontent.com/82796039/123354983-acc46300-d59f-11eb-9689-53802b7e3c6d.jpg)
-```
-
 ![aa](https://user-images.githubusercontent.com/82796039/123361284-beab0380-d5a9-11eb-9eac-d9edb40218d3.jpg)
+```
 ```
 ### 오토스케일 아웃
 - 동적 Scale out(replica의 자동적 추가,HPA) 을 통하여 시스템을 확장 해주는 후속처리가 필요.
@@ -634,14 +633,13 @@ $ kubectl autoscale deploy payment --min=1 --max=10 --cpu-percent=15
 ---
 
 #### 검증 및 테스트
+```
 - CB 에서 했던 방식대로 워크로드를 2분 동안 걸어준다.
-```
-$ siege -c100 -t30S -r10 -v --content-type "application/json" 'http://reserve:8080/reserves POST {"price":"7777777", "startDay":"20210624", "endDay":"20210624", "customer":"andynam", "name":"sportscar", "status":"approve"}'
-```
 
-```
+$ siege -c100 -t30S -r10 -v --content-type "application/json" 'http://reserve:8080/reserves POST {"price":"7777777", "startDay":"20210624", "endDay":"20210624", "customer":"andynam", "name":"sportscar", "status":"approve"}'
+
 - 오토스케일이 어떻게 되고 있는지 모니터링을 걸어둔다:
-```
+
 $ kubectl get deploy reserve -w
 $ kubectl get deploy payment -w
 $ kubectl get pod -w
