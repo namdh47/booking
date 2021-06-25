@@ -606,7 +606,7 @@ pipeline build script 는 각 프로젝트 폴더 이하에 Dockerfile 과 deplo
   - 동시사용자 100명
   - 60초 동안 10번 반복하여 실시
 
-$ siege -c100 -t30S -r10 -v --content-type "application/json" 'http://reserve:8080/reserves POST {"price":"7777777", "startDay":"20210624", "endDay":"20210624", "customer":"andynam", "name":"sportscar", "status":"approve"}'
+$ siege -c100 -t60S -r10 -v --content-type "application/json" 'http://reserve:8080/reserves POST {"price":"7777777", "startDay":"20210624", "endDay":"20210624", "customer":"andynam", "name":"sportscar", "status":"approve"}'
 ```
 
 - 부하 발생하여 서킷 브레이커가 발동하여 요청에 실패하였고, 밀린 부하가 결재시스템에서 처리되면서 다시 대여요청을 받기 시작한다.
