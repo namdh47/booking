@@ -588,24 +588,12 @@ pipeline build script 는 각 프로젝트 폴더 이하에 Dockerfile 과 deplo
 ```
 
 ### application.yml (reserve 서비스)
-```
-feign:
-  hystrix:
-    enabled: true
-
-hystrix:
-  command:
-    # 전역설정
-    default:
-      execution.isolation.thread.timeoutInMilliseconds: 610
-```
 ![111](https://user-images.githubusercontent.com/82796039/123353309-3114e700-d59c-11eb-8ef8-cd779beb1571.jpg)
 
-#### 검증 및 테스트
-- 피호출 서비스(결제:payment) 의 임의 부하 처리 - 400 밀리에서 증감 220 밀리 정도 왔다갔다 하게
-
+- 피호출 서비스(결제:payment) 의 임의 부하 처리 - 400 밀리에서 증감 220 밀리 정도 왔다갔다 하게 설정
 ![444](https://user-images.githubusercontent.com/82796039/123358811-16943b00-d5a7-11eb-9f95-159397a391ef.jpg)
 ```
+
 * seige툴 사용법
     Default namespace 에 siege 란 이름으로 pod 생성
   $ kubectl run siege --image=cna08664/siege-nginx -n default
@@ -625,17 +613,11 @@ $ siege -c100 -t30S -r10 -v --content-type "application/json" 'http://reserve:80
 ![22](https://user-images.githubusercontent.com/82796039/123354964-a635eb80-d59f-11eb-8e88-bf38a6e7c7f2.jpg)
 ![33](https://user-images.githubusercontent.com/82796039/123354983-acc46300-d59f-11eb-9689-53802b7e3c6d.jpg)
 ```
-```
-#### 결과
+
 ![aa](https://user-images.githubusercontent.com/82796039/123361284-beab0380-d5a9-11eb-9eac-d9edb40218d3.jpg)
-
-- 운영시스템은 죽지 않고 지속적으로 서킷 브레이커에 의하여 적절히 회로가 열림과 닫힘이 벌어지면서 자원을 보호하고 있음을 보여줌.
-하지만, 64.29% 가 성공하였고, 35.71%가 실패했다는 것은 고객 사용성에 있어 좋지 않기 때문에 Retry 설정과
-동적 Scale out(replica의 자동적 추가,HPA) 을 통하여 시스템을 확장 해주는 후속처리가 필요.
 ```
-```
-## 오토스케일 아웃
-
+### 오토스케일 아웃
+- 동적 Scale out(replica의 자동적 추가,HPA) 을 통하여 시스템을 확장 해주는 후속처리가 필요.
 - 앞서 서킷 브레이커는 시스템을 안정되게 운영할 수 있게 해줬지만 사용자의 요청을 100% 받아들여주지 못했기 때문에 이에 대한 보완책으로 자동화된 확장 기능을 적용하고자 한다. 
 - 대여요청(catch) 및 결제(payment)서비스에 대한 replica를 동적으로 늘려주도록 HPA를 설정한다. 설정은 CPU 사용량이 15프로를 넘어서면 replica를 10개까지 늘려준다:
 
@@ -654,7 +636,9 @@ $ kubectl autoscale deploy payment --min=1 --max=10 --cpu-percent=15
 #### 검증 및 테스트
 - CB 에서 했던 방식대로 워크로드를 2분 동안 걸어준다.
 ```
-$ siege -c100 -t60S -r10 -v --content-type "application/json" 'http://catch:8080/catches POST {"price":"250000", "startingPoint":"Kwangjoo", "destination":"Chooncheon", "customer":"SteveOh", "status":"approve"}'
+$ siege -c100 -t30S -r10 -v --content-type "application/json" 'http://reserve:8080/reserves POST {"price":"7777777", "startDay":"20210624", "endDay":"20210624", "customer":"andynam", "name":"sportscar", "status":"approve"}'
+```
+
 ```
 - 오토스케일이 어떻게 되고 있는지 모니터링을 걸어둔다:
 ```
