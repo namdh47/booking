@@ -557,7 +557,7 @@ public class PolicyHandler{
 
 }
 ```
-mypage view조회
+###  mypage view조회
 ![9-5](https://user-images.githubusercontent.com/82796039/123084621-5569aa00-d45c-11eb-8dd2-cd57cc0509de.jpg)
 
 
@@ -607,17 +607,16 @@ hystrix:
 ![444](https://user-images.githubusercontent.com/82796039/123358811-16943b00-d5a7-11eb-9f95-159397a391ef.jpg)
 ```
 * seige툴 사용법
+    Default namespace 에 siege 란 이름으로 pod 생성
+  $ kubectl run siege --image=cna08664/siege-nginx -n default
 
-Default namespace 에 siege 란 이름으로 pod 생성
-$ kubectl run siege --image=cna08664/siege-nginx -n default
-```
 * siege pod 에 접속
-$ kubectl exec -it siege -c siege -n default -- /bin/bash
+  $ kubectl exec -it siege -c siege -n default -- /bin/bash
 
 * 부하테스터 **siege** 툴을 통한 서킷 브레이커 동작 확인:
-- 동시사용자 100명
-- 60초 동안 10번 반복하여 실시
-```
+  - 동시사용자 100명
+  - 60초 동안 10번 반복하여 실시
+
 $ siege -c100 -t30S -r10 -v --content-type "application/json" 'http://reserve:8080/reserves POST {"price":"7777777", "startDay":"20210624", "endDay":"20210624", "customer":"andynam", "name":"sportscar", "status":"approve"}'
 ```
 
@@ -626,15 +625,15 @@ $ siege -c100 -t30S -r10 -v --content-type "application/json" 'http://reserve:80
 ![22](https://user-images.githubusercontent.com/82796039/123354964-a635eb80-d59f-11eb-8e88-bf38a6e7c7f2.jpg)
 ![33](https://user-images.githubusercontent.com/82796039/123354983-acc46300-d59f-11eb-9689-53802b7e3c6d.jpg)
 ```
-* report
-
-![44](https://user-images.githubusercontent.com/82796039/123355003-b948bb80-d59f-11eb-89b8-9ffb8f40f344.jpg)
 ```
+#### 결과
+![aa](https://user-images.githubusercontent.com/82796039/123361284-beab0380-d5a9-11eb-9eac-d9edb40218d3.jpg)
+
 - 운영시스템은 죽지 않고 지속적으로 서킷 브레이커에 의하여 적절히 회로가 열림과 닫힘이 벌어지면서 자원을 보호하고 있음을 보여줌.
 하지만, 64.29% 가 성공하였고, 35.71%가 실패했다는 것은 고객 사용성에 있어 좋지 않기 때문에 Retry 설정과
 동적 Scale out(replica의 자동적 추가,HPA) 을 통하여 시스템을 확장 해주는 후속처리가 필요.
-
-
+```
+```
 ## 오토스케일 아웃
 
 - 앞서 서킷 브레이커는 시스템을 안정되게 운영할 수 있게 해줬지만 사용자의 요청을 100% 받아들여주지 못했기 때문에 이에 대한 보완책으로 자동화된 확장 기능을 적용하고자 한다. 
@@ -649,7 +648,9 @@ $ kubectl autoscale deploy reserve --min=1 --max=10 --cpu-percent=15
 $ kubectl autoscale deploy payment --min=1 --max=10 --cpu-percent=15
 ```
 ![11](https://user-images.githubusercontent.com/82796039/123355489-bd290d80-d5a0-11eb-9ba7-419a7f1cb152.jpg)
+
 ---
+
 #### 검증 및 테스트
 - CB 에서 했던 방식대로 워크로드를 2분 동안 걸어준다.
 ```
@@ -657,21 +658,13 @@ $ siege -c100 -t60S -r10 -v --content-type "application/json" 'http://catch:8080
 ```
 - 오토스케일이 어떻게 되고 있는지 모니터링을 걸어둔다:
 ```
-$ kubectl get deploy catch -w
+$ kubectl get deploy reserve -w
 $ kubectl get deploy payment -w
 $ kubectl get pod -w
 ```
-- 어느정도 시간이 흐른 후 (약 30초 간격) 스케일 아웃이 벌어지는 것을 확인할 수 있다:
+- 어느정도 시간이 흐른 후 스케일 아웃이 벌어지는 것을 확인할 수 있다:
 
-![image](https://user-images.githubusercontent.com/11955597/120108854-e7ee9480-c1a1-11eb-822e-b8fe208af184.png)
-
-![image](https://user-images.githubusercontent.com/11955597/120108848-dc9b6900-c1a1-11eb-9b06-4dd815932a23.png)
-
-
-
-- siege 의 로그를 보아도 전체적인 성공률이 높아진 것을 확인 할 수 있다. 
-![image](https://user-images.githubusercontent.com/11955597/120111684-dc08cf80-c1ad-11eb-910e-b47f00e2c03f.png)
-
+![44](https://user-images.githubusercontent.com/82796039/123355003-b948bb80-d59f-11eb-89b8-9ffb8f40f344.jpg)
 
 
 ## 무정지 재배포
